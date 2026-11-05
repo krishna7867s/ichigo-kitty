@@ -64,9 +64,9 @@ Antes de emitir cualquier token, la base de datos debe resguardar las credencial
 
 ---
 
-## 2. Diagrama Entidad-Relación (ER) Actualizado
+## 2. Diagrama Entidad-Relación (ER) Actualizado (16 Tablas)
 
-El modelo de base de datos en SQLite (`kitty_import.db`) consta de **6 entidades**: las 5 entidades operativas del negocio (`PROVEEDORES`, `CATEGORIAS`, `PRODUCTOS`, `PEDIDOS`, `DETALLE_PEDIDO`) con integridad referencial activa (`PRAGMA foreign_keys = ON`) y la entidad `USUARIOS` encargada del control de acceso mediante JWT.
+El modelo de base de datos en SQLite (`kitty_import.db`) y sus 16 migraciones (`backend/migrations/` y `migrations/`) constan de **16 entidades** integradas con llaves foráneas activas (`PRAGMA foreign_keys = ON`):
 
 ```mermaid
 erDiagram
@@ -76,6 +76,12 @@ erDiagram
         TEXT correo "NOT NULL, UNIQUE"
         TEXT password_hash "NOT NULL (bcryptjs 10 rondas)"
         TEXT fecha_creacion "NOT NULL (ISO 8601)"
+    }
+
+    ROLES {
+        INTEGER id PK "AUTOINCREMENT"
+        TEXT nombre "NOT NULL, UNIQUE"
+        TEXT descripcion "NULLABLE"
     }
 
     PROVEEDORES {
@@ -120,11 +126,99 @@ erDiagram
         REAL precio_unitario_cny "NOT NULL (> 0)"
     }
 
-    CATEGORIAS ||--o{ PRODUCTOS : "clasifica (1:N, ON DELETE RESTRICT)"
-    PROVEEDORES ||--o{ PRODUCTOS : "suministra (1:N, ON DELETE RESTRICT)"
-    PROVEEDORES ||--o{ PEDIDOS : "atiende (1:N, ON DELETE RESTRICT)"
-    PEDIDOS ||--o{ DETALLE_PEDIDO : "contiene (1:N, ON DELETE CASCADE)"
-    PRODUCTOS ||--o{ DETALLE_PEDIDO : "se_incluye_en (1:N, ON DELETE RESTRICT)"
+    ALMACENES {
+        INTEGER id PK "AUTOINCREMENT"
+        TEXT nombre "NOT NULL"
+        TEXT ubicacion "NOT NULL"
+        INTEGER capacidad_maxima "NOT NULL (> 0)"
+        TEXT responsable "NOT NULL"
+    }
+
+    INVENTARIO_ALMACEN {
+        INTEGER id PK "AUTOINCREMENT"
+        INTEGER almacen_id FK "NOT NULL -> ALMACENES.id"
+        INTEGER producto_id FK "NOT NULL -> PRODUCTOS.id"
+        INTEGER cantidad "NOT NULL (>= 0)"
+        TEXT pasillo "NULLABLE"
+    }
+
+    AGENTES_ENVIO {
+        INTEGER id PK "AUTOINCREMENT"
+        TEXT nombre "NOT NULL"
+        TEXT tipo_transporte "NOT NULL ('Aereo', 'Maritimo', 'Expres')"
+        REAL tarifa_kg_usd "NOT NULL (> 0)"
+        TEXT contacto "NOT NULL"
+        TEXT pais_origen "NOT NULL"
+    }
+
+    ADUANA_DESPACHOS {
+        INTEGER id PK "AUTOINCREMENT"
+        INTEGER pedido_id FK "NOT NULL -> PEDIDOS.id"
+        INTEGER agente_id FK "NOT NULL -> AGENTES_ENVIO.id"
+        TEXT numero_pedimento "NOT NULL, UNIQUE"
+        REAL arancel_mxn "NOT NULL (>= 0)"
+        TEXT estado_aduana "NOT NULL ('en_revision', 'liberado', 'retenido')"
+        TEXT fecha_despacho "NOT NULL"
+    }
+
+    CLIENTES {
+        INTEGER id PK "AUTOINCREMENT"
+        TEXT nombre "NOT NULL"
+        TEXT correo "NOT NULL, UNIQUE"
+        TEXT telefono "NULLABLE"
+        TEXT ciudad "NULLABLE"
+        TEXT nivel_membresia "NOT NULL ('Bronce', 'Plata', 'Oro', 'VIP')"
+    }
+
+    VENTAS {
+        INTEGER id PK "AUTOINCREMENT"
+        INTEGER cliente_id FK "NOT NULL -> CLIENTES.id"
+        INTEGER usuario_id FK "NULLABLE -> USUARIOS.id"
+        TEXT fecha "NOT NULL"
+        REAL total "NOT NULL (>= 0)"
+        TEXT estado_venta "NOT NULL ('pendiente', 'pagada', 'enviada', 'cancelada')"
+    }
+
+    DETALLE_VENTA {
+        INTEGER id PK "AUTOINCREMENT"
+        INTEGER venta_id FK "NOT NULL -> VENTAS.id"
+        INTEGER producto_id FK "NOT NULL -> PRODUCTOS.id"
+        INTEGER cantidad "NOT NULL (> 0)"
+        REAL precio_unitario "NOT NULL (> 0)"
+    }
+
+    METODOS_PAGO {
+        INTEGER id PK "AUTOINCREMENT"
+        TEXT nombre "NOT NULL, UNIQUE"
+        REAL comision_porcentaje "NOT NULL (>= 0)"
+        INTEGER activo "NOT NULL (1 o 0)"
+    }
+
+    PAGOS_PROVEEDOR {
+        INTEGER id PK "AUTOINCREMENT"
+        INTEGER pedido_id FK "NOT NULL -> PEDIDOS.id"
+        INTEGER metodo_pago_id FK "NOT NULL -> METODOS_PAGO.id"
+        REAL monto_cny "NOT NULL (> 0)"
+        REAL tipo_cambio "NOT NULL (> 0)"
+        TEXT referencia "NOT NULL"
+        TEXT fecha_pago "NOT NULL"
+    }
+
+    CATEGORIAS ||--o{ PRODUCTOS : "clasifica (1:N)"
+    PROVEEDORES ||--o{ PRODUCTOS : "suministra (1:N)"
+    PROVEEDORES ||--o{ PEDIDOS : "atiende (1:N)"
+    PEDIDOS ||--o{ DETALLE_PEDIDO : "contiene (1:N)"
+    PRODUCTOS ||--o{ DETALLE_PEDIDO : "se_incluye_en (1:N)"
+    ALMACENES ||--o{ INVENTARIO_ALMACEN : "almacena (1:N)"
+    PRODUCTOS ||--o{ INVENTARIO_ALMACEN : "ubicado_en (1:N)"
+    PEDIDOS ||--o{ ADUANA_DESPACHOS : "tramita (1:N)"
+    AGENTES_ENVIO ||--o{ ADUANA_DESPACHOS : "transporta (1:N)"
+    CLIENTES ||--o{ VENTAS : "realiza (1:N)"
+    USUARIOS ||--o{ VENTAS : "registra (1:N)"
+    VENTAS ||--o{ DETALLE_VENTA : "incluye (1:N)"
+    PRODUCTOS ||--o{ DETALLE_VENTA : "vendido_en (1:N)"
+    PEDIDOS ||--o{ PAGOS_PROVEEDOR : "liquida (1:N)"
+    METODOS_PAGO ||--o{ PAGOS_PROVEEDOR : "procesa (1:N)"
 ```
 
 ### Resumen de Relaciones y Reglas de Integridad
@@ -136,3 +230,4 @@ erDiagram
 | `PEDIDOS` -> `DETALLE_PEDIDO` | `1 : N` | `detalle_pedido.pedido_id` | Al recibir un pedido (`estado = 'recibido'`), suma `cantidad` al `stock` de cada producto en una transacción. |
 | `PRODUCTOS` -> `DETALLE_PEDIDO` | `1 : N` | `detalle_pedido.producto_id` | No permite borrar producto con detalles de pedido asociados (`409 Conflict`). |
 | `USUARIOS` (Autenticación) | Independiente | — | Protege todos los endpoints de las 5 entidades mediante `authMiddleware` (`JWT`). |
+

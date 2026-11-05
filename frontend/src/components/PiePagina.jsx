@@ -15,6 +15,8 @@ function PiePagina() {
           <Link to="/proveedores" className="enlace-pie">Proveedores</Link>
           <span className="separador-pie">|</span>
           <Link to="/pedidos" className="enlace-pie">Pedidos</Link>
+          <span className="separador-pie">|</span>
+          <Link to="/operaciones" className="enlace-pie">Módulos</Link>
         </nav>
       </div>
     </footer>

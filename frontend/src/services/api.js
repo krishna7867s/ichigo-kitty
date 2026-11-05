@@ -177,4 +177,23 @@ export async function eliminarDetallePedido(id) {
   await clienteApi.delete(`/detalle_pedido/${id}`);
 }
 
+export async function listarEntidadGenerica(recurso) {
+  const respuesta = await clienteApi.get(`/${recurso}`);
+  return respuesta.data;
+}
+
+export async function crearEntidadGenerica(recurso, datos) {
+  const respuesta = await clienteApi.post(`/${recurso}`, datos);
+  return respuesta.data;
+}
+
+export async function actualizarEntidadGenerica(recurso, id, datos) {
+  const respuesta = await clienteApi.put(`/${recurso}/${id}`, datos);
+  return respuesta.data;
+}
+
+export async function eliminarEntidadGenerica(recurso, id) {
+  await clienteApi.delete(`/${recurso}/${id}`);
+}
+
 export default clienteApi;

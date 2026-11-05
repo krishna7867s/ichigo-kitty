@@ -8,6 +8,7 @@ import Productos from './pages/Productos';
 import Categorias from './pages/Categorias';
 import Proveedores from './pages/Proveedores';
 import Pedidos from './pages/Pedidos';
+import Operaciones from './pages/Operaciones';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 
@@ -59,6 +60,14 @@ function App() {
                   element={
                     <RutaProtegida>
                       <Pedidos />
+                    </RutaProtegida>
+                  }
+                />
+                <Route
+                  path="/operaciones"
+                  element={
+                    <RutaProtegida>
+                      <Operaciones />
                     </RutaProtegida>
                   }
                 />

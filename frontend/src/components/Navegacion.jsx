@@ -5,7 +5,8 @@ const ENLACES = [
   { ruta: '/productos', texto: 'Productos' },
   { ruta: '/categorias', texto: 'Categorías' },
   { ruta: '/proveedores', texto: 'Proveedores' },
-  { ruta: '/pedidos', texto: 'Pedidos' }
+  { ruta: '/pedidos', texto: 'Pedidos' },
+  { ruta: '/operaciones', texto: 'Módulos (16 Tablas)' }
 ];
 
 function Navegacion() {
