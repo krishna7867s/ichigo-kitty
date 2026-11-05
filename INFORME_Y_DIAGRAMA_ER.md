@@ -64,24 +64,25 @@ Antes de emitir cualquier token, la base de datos debe resguardar las credencial
 
 ---
 
-## 2. Diagrama Entidad-Relación (ER) Actualizado (16 Tablas)
+## 2. Diagrama Entidad-Relación (ER) Actualizado (20 Tablas — Costa Rica)
 
-El modelo de base de datos en SQLite (`kitty_import.db`) y sus 16 migraciones (`backend/migrations/` y `migrations/`) constan de **16 entidades** integradas con llaves foráneas activas (`PRAGMA foreign_keys = ON`):
+El modelo de base de datos en SQLite (`kitty_import.db`) y sus 20 migraciones (`backend/migrations/` y `migrations/`) constan de **20 entidades** integradas con llaves foráneas activas (`PRAGMA foreign_keys = ON`):
 
 ```mermaid
 erDiagram
     USUARIOS {
         INTEGER id PK "AUTOINCREMENT"
         TEXT nombre "NOT NULL"
-        TEXT correo "NOT NULL, UNIQUE"
+        TEXT email "NOT NULL, UNIQUE"
         TEXT password_hash "NOT NULL (bcryptjs 10 rondas)"
-        TEXT fecha_creacion "NOT NULL (ISO 8601)"
+        INTEGER rol_id FK "NULLABLE -> ROLES.id"
+        TEXT creado_en "NOT NULL (ISO 8601)"
     }
 
     ROLES {
         INTEGER id PK "AUTOINCREMENT"
         TEXT nombre "NOT NULL, UNIQUE"
-        TEXT descripcion "NULLABLE"
+        TEXT descripcion "NOT NULL"
     }
 
     PROVEEDORES {
@@ -91,6 +92,7 @@ erDiagram
         TEXT ciudad "NULLABLE"
         TEXT contacto "NOT NULL"
         INTEGER calificacion "NULLABLE (1 a 5)"
+        TEXT descripcion "NULLABLE"
     }
 
     CATEGORIAS {
@@ -102,6 +104,8 @@ erDiagram
     PRODUCTOS {
         INTEGER id PK "AUTOINCREMENT"
         TEXT nombre "NOT NULL"
+        TEXT sku "NULLABLE"
+        TEXT descripcion "NULLABLE"
         REAL precio_compra_cny "NOT NULL (> 0)"
         REAL precio_venta "NOT NULL (> 0)"
         INTEGER stock "NOT NULL (>= 0)"
@@ -116,6 +120,7 @@ erDiagram
         TEXT estado "NOT NULL ('pedido', 'en_transito', 'recibido', 'cancelado')"
         TEXT rastreo "NULLABLE"
         REAL costo_envio "NOT NULL (>= 0)"
+        TEXT notas_importacion "NULLABLE"
     }
 
     DETALLE_PEDIDO {
@@ -129,9 +134,10 @@ erDiagram
     ALMACENES {
         INTEGER id PK "AUTOINCREMENT"
         TEXT nombre "NOT NULL"
-        TEXT ubicacion "NOT NULL"
+        TEXT ubicacion "NOT NULL (San Jose / Alajuela / Heredia)"
         INTEGER capacidad_maxima "NOT NULL (> 0)"
         TEXT responsable "NOT NULL"
+        TEXT descripcion "NULLABLE"
     }
 
     INVENTARIO_ALMACEN {
@@ -149,25 +155,28 @@ erDiagram
         REAL tarifa_kg_usd "NOT NULL (> 0)"
         TEXT contacto "NOT NULL"
         TEXT pais_origen "NOT NULL"
+        TEXT descripcion_servicio "NULLABLE"
     }
 
     ADUANA_DESPACHOS {
         INTEGER id PK "AUTOINCREMENT"
         INTEGER pedido_id FK "NOT NULL -> PEDIDOS.id"
         INTEGER agente_id FK "NOT NULL -> AGENTES_ENVIO.id"
-        TEXT numero_pedimento "NOT NULL, UNIQUE"
-        REAL arancel_mxn "NOT NULL (>= 0)"
+        TEXT numero_pedimento "NOT NULL, UNIQUE (DUA TICA CR)"
+        REAL arancel_crc "NOT NULL (>= 0 Colones CR)"
         TEXT estado_aduana "NOT NULL ('en_revision', 'liberado', 'retenido')"
         TEXT fecha_despacho "NOT NULL"
+        TEXT observaciones "NULLABLE"
     }
 
     CLIENTES {
         INTEGER id PK "AUTOINCREMENT"
         TEXT nombre "NOT NULL"
         TEXT correo "NOT NULL, UNIQUE"
-        TEXT telefono "NULLABLE"
-        TEXT ciudad "NULLABLE"
+        TEXT telefono "NULLABLE (+506 CR)"
+        TEXT ciudad "NULLABLE (GAM Costa Rica)"
         TEXT nivel_membresia "NOT NULL ('Bronce', 'Plata', 'Oro', 'VIP')"
+        TEXT notas_preferencia "NULLABLE"
     }
 
     VENTAS {
@@ -189,9 +198,10 @@ erDiagram
 
     METODOS_PAGO {
         INTEGER id PK "AUTOINCREMENT"
-        TEXT nombre "NOT NULL, UNIQUE"
+        TEXT nombre "NOT NULL, UNIQUE (SINPE Movil, BAC, Alipay...)"
         REAL comision_porcentaje "NOT NULL (>= 0)"
         INTEGER activo "NOT NULL (1 o 0)"
+        TEXT descripcion "NULLABLE"
     }
 
     PAGOS_PROVEEDOR {
@@ -204,6 +214,49 @@ erDiagram
         TEXT fecha_pago "NOT NULL"
     }
 
+    MARCAS_LICENCIAS {
+        INTEGER id PK "AUTOINCREMENT"
+        TEXT nombre "NOT NULL, UNIQUE"
+        TEXT pais_origen "NOT NULL"
+        TEXT fabricante_oficial "NOT NULL"
+        TEXT tipo_licencia "NOT NULL"
+        TEXT descripcion "NOT NULL"
+    }
+
+    CONTROL_CALIDAD {
+        INTEGER id PK "AUTOINCREMENT"
+        INTEGER pedido_id FK "NOT NULL -> PEDIDOS.id"
+        INTEGER producto_id FK "NOT NULL -> PRODUCTOS.id"
+        TEXT inspector "NOT NULL"
+        INTEGER unidades_revisadas "NOT NULL"
+        INTEGER unidades_defectuosas "NOT NULL"
+        TEXT resultado "NOT NULL ('aprobado', 'aprobado_con_observaciones', 'rechazado')"
+        TEXT observaciones "NOT NULL"
+    }
+
+    PROMOCIONES_DESCUENTOS {
+        INTEGER id PK "AUTOINCREMENT"
+        TEXT codigo "NOT NULL, UNIQUE"
+        TEXT nombre_campana "NOT NULL"
+        REAL porcentaje_descuento "NOT NULL"
+        REAL minimo_compra_usd "NOT NULL"
+        TEXT fecha_inicio "NOT NULL"
+        TEXT fecha_fin "NOT NULL"
+        INTEGER activa "NOT NULL (1 o 0)"
+        TEXT descripcion "NOT NULL"
+    }
+
+    INCIDENCIAS_ENVIO {
+        INTEGER id PK "AUTOINCREMENT"
+        INTEGER pedido_id FK "NOT NULL -> PEDIDOS.id"
+        TEXT tipo_incidencia "NOT NULL"
+        TEXT severidad "NOT NULL ('baja', 'media', 'alta')"
+        TEXT descripcion "NOT NULL"
+        TEXT resolucion "NOT NULL"
+        TEXT estado "NOT NULL"
+    }
+
+    ROLES ||--o{ USUARIOS : "asigna (1:N)"
     CATEGORIAS ||--o{ PRODUCTOS : "clasifica (1:N)"
     PROVEEDORES ||--o{ PRODUCTOS : "suministra (1:N)"
     PROVEEDORES ||--o{ PEDIDOS : "atiende (1:N)"
@@ -211,7 +264,7 @@ erDiagram
     PRODUCTOS ||--o{ DETALLE_PEDIDO : "se_incluye_en (1:N)"
     ALMACENES ||--o{ INVENTARIO_ALMACEN : "almacena (1:N)"
     PRODUCTOS ||--o{ INVENTARIO_ALMACEN : "ubicado_en (1:N)"
-    PEDIDOS ||--o{ ADUANA_DESPACHOS : "tramita (1:N)"
+    PEDIDOS ||--o{ ADUANA_DESPACHOS : "tramita_DUA (1:N)"
     AGENTES_ENVIO ||--o{ ADUANA_DESPACHOS : "transporta (1:N)"
     CLIENTES ||--o{ VENTAS : "realiza (1:N)"
     USUARIOS ||--o{ VENTAS : "registra (1:N)"
@@ -219,6 +272,9 @@ erDiagram
     PRODUCTOS ||--o{ DETALLE_VENTA : "vendido_en (1:N)"
     PEDIDOS ||--o{ PAGOS_PROVEEDOR : "liquida (1:N)"
     METODOS_PAGO ||--o{ PAGOS_PROVEEDOR : "procesa (1:N)"
+    PEDIDOS ||--o{ CONTROL_CALIDAD : "inspecciona_lote (1:N)"
+    PRODUCTOS ||--o{ CONTROL_CALIDAD : "evalua_calidad (1:N)"
+    PEDIDOS ||--o{ INCIDENCIAS_ENVIO : "reporta_evento (1:N)"
 ```
 
 ### Resumen de Relaciones y Reglas de Integridad
