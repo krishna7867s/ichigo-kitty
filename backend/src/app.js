@@ -35,23 +35,21 @@ const categoriaRoutes = require('./routes/categoriaRoutes');
 const productoRoutes = require('./routes/productoRoutes');
 const pedidoRoutes = require('./routes/pedidoRoutes');
 const detallePedidoRoutes = require('./routes/detallePedidoRoutes');
-const {
-  usuariosRoutes,
-  rolesRoutes,
-  almacenesRoutes,
-  inventarioAlmacenRoutes,
-  agentesEnvioRoutes,
-  aduanaDespachosRoutes,
-  clientesRoutes,
-  ventasRoutes,
-  detalleVentaRoutes,
-  metodosPagoRoutes,
-  pagosProveedorRoutes,
-  marcasLicenciasRoutes,
-  controlCalidadRoutes,
-  promocionesDescuentosRoutes,
-  incidenciasEnvioRoutes
-} = require('./routes/operacionesRoutes');
+const usuariosRoutes = require('./routes/usuarioRoutes');
+const rolesRoutes = require('./routes/rolRoutes');
+const almacenesRoutes = require('./routes/almacenRoutes');
+const inventarioAlmacenRoutes = require('./routes/inventarioAlmacenRoutes');
+const agentesEnvioRoutes = require('./routes/agenteEnvioRoutes');
+const aduanaDespachosRoutes = require('./routes/aduanaDespachoRoutes');
+const clientesRoutes = require('./routes/clienteRoutes');
+const ventasRoutes = require('./routes/ventaRoutes');
+const detalleVentaRoutes = require('./routes/detalleVentaRoutes');
+const metodosPagoRoutes = require('./routes/metodoPagoRoutes');
+const pagosProveedorRoutes = require('./routes/pagoProveedorRoutes');
+const marcasLicenciasRoutes = require('./routes/marcaLicenciaRoutes');
+const controlCalidadRoutes = require('./routes/controlCalidadRoutes');
+const promocionesDescuentosRoutes = require('./routes/promocionRoutes');
+const incidenciasEnvioRoutes = require('./routes/incidenciaEnvioRoutes');
 
 function sembrarDatosIniciales() {
   const totalCategorias = db.prepare('SELECT COUNT(*) AS total FROM categorias').get().total;
