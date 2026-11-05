@@ -860,6 +860,105 @@ body {
   display: block;
 }
 
+.panel-selector-modulos {
+  background-color: var(--blanco);
+  border: 1.5px solid var(--rosa-claro);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.titulo-selector-modulos {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rosa-titular);
+  margin-bottom: 10px;
+}
+
+.rejilla-botones-modulos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 8px;
+}
+
+.boton-modulo-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background-color: var(--rosa-fila);
+  border: 1px solid var(--rosa-claro);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--texto-oscuro);
+  cursor: pointer;
+  text-align: left;
+}
+
+.boton-modulo-tab:hover {
+  border-color: var(--rosa-fuerte);
+  background-color: var(--rosa-pastel-caja);
+}
+
+.boton-modulo-tab-activo {
+  background: linear-gradient(180deg, #ff7fbf 0%, #f454a5 49%, #e6358f 50%, #c91e75 100%);
+  color: var(--blanco);
+  border-color: var(--rosa-titular);
+}
+
+.etiqueta-area-modulo {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  color: var(--rosa-fuerte);
+}
+
+.boton-modulo-tab-activo .etiqueta-area-modulo {
+  color: #ffe4f1;
+}
+
+.descripcion-modulo-activa {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--texto-oscuro);
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--rosa-claro);
+  border-radius: 8px;
+  padding: 6px 12px;
+  margin-top: 4px;
+}
+
+.rejilla-departamentos-inicio {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 14px 16px;
+  background-color: var(--blanco);
+}
+
+.bloque-departamento-inicio {
+  background-color: var(--rosa-fila);
+  border: 1px solid var(--rosa-claro);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.titulo-departamento-inicio {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 15px;
+  color: var(--rosa-titular);
+  margin-bottom: 4px;
+}
+
+.texto-departamento-inicio {
+  font-size: 13px;
+  color: var(--texto-oscuro);
+}
+
 @media (max-width: 760px) {
   .contenedor-autenticacion {
     flex-direction: column;

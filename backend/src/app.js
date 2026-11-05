@@ -22,6 +22,10 @@ require('./models/ventaModel');
 require('./models/detalleVentaModel');
 require('./models/metodoPagoModel');
 require('./models/pagoProveedorModel');
+require('./models/marcaLicenciaModel');
+require('./models/controlCalidadModel');
+require('./models/promocionModel');
+require('./models/incidenciaEnvioModel');
 
 const authMiddleware = require('./middlewares/authMiddleware');
 const authController = require('./controllers/authController');
@@ -42,7 +46,11 @@ const {
   ventasRoutes,
   detalleVentaRoutes,
   metodosPagoRoutes,
-  pagosProveedorRoutes
+  pagosProveedorRoutes,
+  marcasLicenciasRoutes,
+  controlCalidadRoutes,
+  promocionesDescuentosRoutes,
+  incidenciasEnvioRoutes
 } = require('./routes/operacionesRoutes');
 
 function sembrarDatosIniciales() {
@@ -122,9 +130,9 @@ function sembrarDatosIniciales() {
       const insAlmacen = db.prepare(
         'INSERT INTO almacenes (nombre, ubicacion, capacidad_maxima, responsable) VALUES (?, ?, ?, ?)'
       );
-      insAlmacen.run('Bodega Central Sakura', 'CDMX - Col. Roma Norte', 2500, 'Hinata Hyuga');
-      insAlmacen.run('Estación Empaque Fresa', 'Guadalajara - Zona Chapultepec', 1200, 'Tomoyo Daidouji');
-      insAlmacen.run('Showroom Ichigo', 'Monterrey - Barrio Antiguo', 800, 'Miki Koishikawa');
+      insAlmacen.run('Bodega Central Sakura', 'San José - Barrio Escalante', 2500, 'Hinata Hyuga');
+      insAlmacen.run('Estación Empaque Fresa', 'Heredia - San Francisco', 1200, 'Tomoyo Daidouji');
+      insAlmacen.run('Showroom Ichigo', 'Alajuela - Centro', 800, 'Miki Koishikawa');
 
       const insInv = db.prepare(
         'INSERT INTO inventario_almacen (almacen_id, producto_id, cantidad, pasillo) VALUES (?, ?, ?, ?)'
@@ -150,9 +158,9 @@ function sembrarDatosIniciales() {
       const insCliente = db.prepare(
         'INSERT INTO clientes (nombre, correo, telefono, ciudad, nivel_membresia) VALUES (?, ?, ?, ?, ?)'
       );
-      insCliente.run('Chibiusa Tsukino', 'chibiusa@moonpink.mx', '5512345678', 'CDMX', 'VIP');
-      insCliente.run('Anya Forger', 'anya@eden.edu.mx', '3398765432', 'Guadalajara', 'Oro');
-      insCliente.run('Tohru Honda', 'tohru@onigiri.mx', '8123456789', 'Monterrey', 'Plata');
+      insCliente.run('Chibiusa Tsukino', 'chibiusa@moonpink.cr', '8812-3456', 'San José', 'VIP');
+      insCliente.run('Anya Forger', 'anya@eden.ac.cr', '8765-4321', 'Heredia', 'Oro');
+      insCliente.run('Tohru Honda', 'tohru@onigiri.cr', '8345-6789', 'Cartago', 'Plata');
 
       const insVenta = db.prepare(
         'INSERT INTO ventas (cliente_id, usuario_id, fecha, total, estado_venta) VALUES (?, ?, ?, ?, ?)'
@@ -182,6 +190,41 @@ function sembrarDatosIniciales() {
     });
 
     ejecutarSeedExtendida();
+  }
+
+  const totalMarcas = db.prepare('SELECT COUNT(*) AS total FROM marcas_licencias').get().total;
+  if (totalMarcas === 0) {
+    const ejecutarSeed20 = db.transaction(() => {
+      const insMarca = db.prepare(
+        'INSERT INTO marcas_licencias (nombre, personaje_principal, origen, descripcion) VALUES (?, ?, ?, ?)'
+      );
+      insMarca.run('Sanrio Original Tokyo', 'Hello Kitty & Friends', 'Japón', 'Línea clásica oficial de peluches, bolsos y papelería de edición japonesa con etiqueta holográfica.');
+      insMarca.run('Kuromi Punk Berry', 'Kuromi & My Melody', 'Japón', 'Colección de accesorios pastel-goth, pinzas para cabello, espejos y llaveros acrílicos.');
+      insMarca.run('Cinnamoroll Cloud Cafe', 'Cinnamoroll', 'Japón', 'Artículos de escritorio, tazas, monederos de felpa y stickers con temática de cafetería dulce.');
+      insMarca.run('Capibara Kawaii Studio', 'Kapibara-san', 'China', 'Línea viral de peluches suaves con mochilas intercambiables importados de Guangzhou.');
+
+      const insCalidad = db.prepare(
+        'INSERT INTO control_calidad (pedido_id, producto_id, unidades_revisadas, resultado, descripcion_inspeccion) VALUES (?, ?, ?, ?, ?)'
+      );
+      insCalidad.run(1, 1, 10, 'Aprobado', 'Costuras reforzadas, felpa libre de manchas y etiquetas originales completas en las 10 piezas.');
+      insCalidad.run(1, 2, 8, 'Aprobado', 'Bordado de ojos simétrico y relleno uniforme; empaque individual sellado sin humedad.');
+      insCalidad.run(1, 6, 15, 'Con detalles', '14 llaveros en perfecto estado; 1 pieza presentó argolla metálica floja y fue ajustada en taller.');
+
+      const insPromo = db.prepare(
+        'INSERT INTO promociones_descuentos (codigo, nombre_campana, porcentaje_descuento, descripcion, activa) VALUES (?, ?, ?, ?, ?)'
+      );
+      insPromo.run('ICHIGO15', 'Festival de la Fresa Primavera', 15, 'Descuento especial en toda la categoría de peluches y llaveros rosados durante el lanzamiento.', 1);
+      insPromo.run('KAWAIIBOX10', 'Combo Papelería & Stickers', 10, 'Aplica en la compra de paquetes de stickers, washi tapes y artículos de journaling.', 1);
+      insPromo.run('NEKOVIP20', 'Semana Club VIP Sanrio', 20, 'Beneficio exclusivo para clientas con membresía Oro y VIP en pedidos mayores a 3 piezas.', 1);
+
+      const insIncidencia = db.prepare(
+        'INSERT INTO incidencias_envio (pedido_id, tipo_incidencia, descripcion_problema, solucion_aplicada, estado_incidencia) VALUES (?, ?, ?, ?, ?)'
+      );
+      insIncidencia.run(2, 'Retraso en conexión aérea', 'El vuelo de carga desde Shenzhen tuvo demora de 48 horas por saturación en temporada alta.', 'El agente YunExpress actualizó la guía y programó entrega prioritaria sin cargo extra.', 'En seguimiento');
+      insIncidencia.run(1, 'Revisión documental de aduana', 'Aduana solicitó traducción detallada de la factura comercial de peluches textiles.', 'Se envió carta de descripción de materiales y el lote fue liberado el mismo día.', 'Resuelta');
+    });
+
+    ejecutarSeed20();
   }
 }
 
@@ -214,6 +257,10 @@ app.use('/api/ventas', authMiddleware, ventasRoutes);
 app.use('/api/detalle_venta', authMiddleware, detalleVentaRoutes);
 app.use('/api/metodos_pago', authMiddleware, metodosPagoRoutes);
 app.use('/api/pagos_proveedor', authMiddleware, pagosProveedorRoutes);
+app.use('/api/marcas_licencias', authMiddleware, marcasLicenciasRoutes);
+app.use('/api/control_calidad', authMiddleware, controlCalidadRoutes);
+app.use('/api/promociones_descuentos', authMiddleware, promocionesDescuentosRoutes);
+app.use('/api/incidencias_envio', authMiddleware, incidenciasEnvioRoutes);
 
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {

@@ -22,5 +22,9 @@ module.exports = {
   ventasRoutes: crearRouterEntidad(controladores.ventas),
   detalleVentaRoutes: crearRouterEntidad(controladores.detalle_venta),
   metodosPagoRoutes: crearRouterEntidad(controladores.metodos_pago),
-  pagosProveedorRoutes: crearRouterEntidad(controladores.pagos_proveedor)
+  pagosProveedorRoutes: crearRouterEntidad(controladores.pagos_proveedor),
+  marcasLicenciasRoutes: crearRouterEntidad(controladores.marcas_licencias),
+  controlCalidadRoutes: crearRouterEntidad(controladores.control_calidad),
+  promocionesDescuentosRoutes: crearRouterEntidad(controladores.promociones_descuentos),
+  incidenciasEnvioRoutes: crearRouterEntidad(controladores.incidencias_envio)
 };

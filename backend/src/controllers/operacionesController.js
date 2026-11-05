@@ -8,7 +8,10 @@ const ventaModel = require('../models/ventaModel');
 const detalleVentaModel = require('../models/detalleVentaModel');
 const metodoPagoModel = require('../models/metodoPagoModel');
 const pagoProveedorModel = require('../models/pagoProveedorModel');
-const usuarioModel = require('../models/usuario');
+const marcaLicenciaModel = require('../models/marcaLicenciaModel');
+const controlCalidadModel = require('../models/controlCalidadModel');
+const promocionModel = require('../models/promocionModel');
+const incidenciaEnvioModel = require('../models/incidenciaEnvioModel');
 const db = require('../models/db');
 
 function crearControladorGenerico(modelo, nombreEntidad, validarFn) {
@@ -139,6 +142,38 @@ const controladores = {
     if (!Number(b.metodo_pago_id)) return 'El método de pago es obligatorio';
     if (!Number(b.monto_cny) || Number(b.monto_cny) <= 0) return 'El monto en CNY debe ser mayor a 0';
     if (!b.referencia || !String(b.referencia).trim()) return 'La referencia de pago es obligatoria';
+    return null;
+  }),
+  marcas_licencias: crearControladorGenerico(marcaLicenciaModel, 'Marca o licencia', (b) => {
+    if (!b.nombre || !String(b.nombre).trim()) return 'El nombre de la marca o colección es obligatorio';
+    if (!b.personaje_principal || !String(b.personaje_principal).trim()) return 'El personaje principal es obligatorio';
+    if (!b.descripcion || !String(b.descripcion).trim()) return 'La descripción es obligatoria';
+    return null;
+  }),
+  control_calidad: crearControladorGenerico(controlCalidadModel, 'Control de calidad', (b) => {
+    if (!Number(b.pedido_id)) return 'El pedido es obligatorio';
+    if (!Number(b.producto_id)) return 'El producto es obligatorio';
+    if (!Number(b.unidades_revisadas) || Number(b.unidades_revisadas) <= 0)
+      return 'Las unidades revisadas deben ser mayores a 0';
+    if (!['Aprobado', 'Con detalles', 'Rechazado'].includes(b.resultado))
+      return 'El resultado debe ser Aprobado, Con detalles o Rechazado';
+    if (!b.descripcion_inspeccion || !String(b.descripcion_inspeccion).trim())
+      return 'La descripción de la inspección es obligatoria';
+    return null;
+  }),
+  promociones_descuentos: crearControladorGenerico(promocionModel, 'Promoción', (b) => {
+    if (!b.codigo || !String(b.codigo).trim()) return 'El código promocional es obligatorio';
+    if (!b.nombre_campana || !String(b.nombre_campana).trim()) return 'El nombre de la campaña es obligatorio';
+    if (!Number(b.porcentaje_descuento) || Number(b.porcentaje_descuento) <= 0 || Number(b.porcentaje_descuento) > 90)
+      return 'El porcentaje de descuento debe estar entre 1 y 90';
+    if (!b.descripcion || !String(b.descripcion).trim()) return 'La descripción de la campaña es obligatoria';
+    return null;
+  }),
+  incidencias_envio: crearControladorGenerico(incidenciaEnvioModel, 'Incidencia de envío', (b) => {
+    if (!Number(b.pedido_id)) return 'El pedido es obligatorio';
+    if (!b.tipo_incidencia || !String(b.tipo_incidencia).trim()) return 'El tipo de incidencia es obligatorio';
+    if (!b.descripcion_problema || !String(b.descripcion_problema).trim()) return 'La descripción del problema es obligatoria';
+    if (!b.solucion_aplicada || !String(b.solucion_aplicada).trim()) return 'La solución aplicada es obligatoria';
     return null;
   })
 };

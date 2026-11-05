@@ -28,6 +28,7 @@ function TablaProductos({ productos, alEditar, alEliminar }) {
             <th>Proveedor</th>
             <th>Compra (CNY)</th>
             <th>Precio venta</th>
+            <th>Margen estimado</th>
             <th>Stock</th>
             <th>Acciones</th>
           </tr>
@@ -35,20 +36,26 @@ function TablaProductos({ productos, alEditar, alEliminar }) {
         <tbody>
           {productos.length === 0 ? (
             <tr>
-              <td colSpan="8">No hay productos registrados.</td>
+              <td colSpan="9">No hay productos registrados.</td>
             </tr>
           ) : (
-            productos.map((producto) => (
+            productos.map((producto) => {
+              const costoEstimadoMxn = Number(producto.precio_compra_cny) * 2.75;
+              const margenMxn = Number(producto.precio_venta) - costoEstimadoMxn;
+              return (
               <tr key={producto.id}>
                 <td>{producto.id}</td>
-                <td>{producto.nombre}</td>
+                <td>
+                  <strong>{producto.nombre}</strong>
+                </td>
                 <td>{producto.categoria_nombre}</td>
                 <td>{producto.proveedor_nombre}</td>
                 <td>¥{Number(producto.precio_compra_cny).toFixed(2)}</td>
                 <td>${Number(producto.precio_venta).toFixed(2)}</td>
+                <td>+${margenMxn.toFixed(2)}</td>
                 <td>
                   <span className={producto.stock < 5 ? 'stock-bajo' : 'stock-normal'}>
-                    {producto.stock}
+                    {producto.stock} pzas
                   </span>
                 </td>
                 <td>
@@ -71,7 +78,8 @@ function TablaProductos({ productos, alEditar, alEliminar }) {
                   </div>
                 </td>
               </tr>
-            ))
+              );
+            })
           )}
         </tbody>
       </table>

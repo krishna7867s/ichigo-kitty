@@ -27,7 +27,7 @@ function formatearFecha(fechaIso) {
   if (!fechaIso) return '—';
   const fecha = new Date(fechaIso);
   if (Number.isNaN(fecha.getTime())) return fechaIso;
-  return fecha.toLocaleDateString('es-MX', {
+  return fecha.toLocaleDateString('es-CR', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'

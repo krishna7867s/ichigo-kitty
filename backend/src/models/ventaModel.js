@@ -56,3 +56,4 @@ function eliminar(id) {
 }
 
 module.exports = { obtenerTodos, obtenerPorId, crear, actualizar, eliminar };
+

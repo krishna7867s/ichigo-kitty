@@ -173,6 +173,41 @@ function Inicio() {
           destino="/proveedores"
         />
       </section>
+
+      <section className="contenedor-barra-rosa" aria-label="Mapa de los 20 módulos del sistema">
+        <div className="barra-rosa-gloss">
+          <span className="barra-rosa-titulo">Arquitectura del Sistema Ichigo Kitty (20 Tablas Conectadas)</span>
+          <Link to="/operaciones" className="barra-rosa-enlace">
+            <span>Abrir centro de módulos</span>
+          </Link>
+        </div>
+        <div className="rejilla-departamentos-inicio">
+          <div className="bloque-departamento-inicio">
+            <h3 className="titulo-departamento-inicio">1. Catálogo y Licencias</h3>
+            <p className="texto-departamento-inicio">
+              Controla <strong>productos</strong>, <strong>categorias</strong> y <strong>marcas_licencias</strong> oficiales (Hello Kitty, Kuromi, Cinnamoroll) con costos en yuanes (CNY), precios de venta y margen de ganancia por pieza.
+            </p>
+          </div>
+          <div className="bloque-departamento-inicio">
+            <h3 className="titulo-departamento-inicio">2. Importación y Aduanas</h3>
+            <p className="texto-departamento-inicio">
+              Administra <strong>proveedores</strong> de Taobao/1688, <strong>pedidos</strong>, <strong>detalle_pedido</strong>, <strong>agentes_envio</strong>, <strong>aduana_despachos</strong> (pedimentos y aranceles) e <strong>incidencias_envio</strong>.
+            </p>
+          </div>
+          <div className="bloque-departamento-inicio">
+            <h3 className="titulo-departamento-inicio">3. Bodegas y Calidad</h3>
+            <p className="texto-departamento-inicio">
+              Registra <strong>almacenes</strong> en Costa Rica, ubicación por pasillo en <strong>inventario_almacen</strong> y dictámenes de revisión física en <strong>control_calidad</strong> al recibir cada caja.
+            </p>
+          </div>
+          <div className="bloque-departamento-inicio">
+            <h3 className="titulo-departamento-inicio">4. Ventas, Finanzas y Acceso</h3>
+            <p className="texto-departamento-inicio">
+              Coordina <strong>clientes</strong> VIP, <strong>ventas</strong>, <strong>detalle_venta</strong>, <strong>promociones_descuentos</strong>, <strong>metodos_pago</strong>, <strong>pagos_proveedor</strong>, <strong>roles</strong> y <strong>usuarios</strong> (JWT).
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

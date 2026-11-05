@@ -7,70 +7,181 @@ import {
   eliminarEntidadGenerica
 } from '../services/api';
 
+const ETIQUETAS_COLUMNAS = {
+  id: 'ID',
+  nombre: 'Nombre',
+  descripcion: 'Descripción detallada',
+  ubicacion: 'Ubicación física',
+  capacidad_maxima: 'Capacidad máx.',
+  responsable: 'Responsable',
+  almacen_id: 'ID Almacén',
+  almacen_nombre: 'Almacén',
+  producto_id: 'ID Producto',
+  producto_nombre: 'Producto',
+  cantidad: 'Cantidad',
+  pasillo: 'Pasillo / Estante',
+  tipo_transporte: 'Transporte',
+  tarifa_kg_usd: 'Tarifa Kg (USD)',
+  contacto: 'Contacto',
+  pais_origen: 'País origen',
+  pedido_id: 'ID Pedido',
+  agente_id: 'ID Agente',
+  agente_nombre: 'Agente naviero',
+  numero_pedimento: 'Núm. DUA / Pedimento',
+  arancel_mxn: 'Impuesto Aduanal (CRC ₡)',
+  estado_aduana: 'Estado Aduana',
+  fecha_despacho: 'Fecha Despacho',
+  correo: 'Correo electrónico',
+  telefono: 'Teléfono',
+  ciudad: 'Ciudad',
+  nivel_membresia: 'Membresía',
+  cliente_id: 'ID Cliente',
+  cliente_nombre: 'Clienta',
+  usuario_id: 'ID Usuario',
+  fecha: 'Fecha',
+  total: 'Total ($)',
+  estado_venta: 'Estado Venta',
+  venta_id: 'ID Venta',
+  precio_unitario: 'Precio Unitario ($)',
+  comision_porcentaje: 'Comisión (%)',
+  activo: 'Activo',
+  metodo_pago_id: 'ID Método',
+  metodo_pago_nombre: 'Método de Pago',
+  monto_cny: 'Monto (CNY ¥)',
+  tipo_cambio: 'Tipo Cambio',
+  referencia: 'Referencia',
+  fecha_pago: 'Fecha Pago',
+  precio_unitario_cny: 'Precio Unit. (CNY ¥)',
+  personaje_principal: 'Personaje Principal',
+  origen: 'País Origen',
+  unidades_revisadas: 'Piezas Revisadas',
+  resultado: 'Dictamen',
+  descripcion_inspeccion: 'Observaciones de Inspección',
+  codigo: 'Código Cupón',
+  nombre_campana: 'Campaña',
+  porcentaje_descuento: 'Descuento (%)',
+  activa: 'Activa',
+  tipo_incidencia: 'Tipo de Incidencia',
+  descripcion_problema: 'Descripción del Problema',
+  solucion_aplicada: 'Solución Aplicada',
+  estado_incidencia: 'Estado',
+  fecha_creacion: 'Fecha Registro'
+};
+
 const CATALOGO_TABLAS = [
   {
-    recurso: 'roles',
-    titulo: 'Roles de Personal',
+    recurso: 'marcas_licencias',
+    area: 'Catálogo',
+    titulo: 'Marcas y Licencias Oficiales',
+    descripcion: 'Registro de colecciones y personajes oficiales (Sanrio Tokyo, Kuromi, Cinnamoroll) con su origen y descripción de autenticidad.',
     campos: [
-      { nombre: 'nombre', etiqueta: 'Nombre del rol', tipo: 'text' },
-      { nombre: 'descripcion', etiqueta: 'Descripción', tipo: 'text' }
+      { nombre: 'nombre', etiqueta: 'Nombre de colección / licencia', tipo: 'text' },
+      { nombre: 'personaje_principal', etiqueta: 'Personaje principal', tipo: 'text' },
+      { nombre: 'origen', etiqueta: 'País de origen', tipo: 'text' },
+      { nombre: 'descripcion', etiqueta: 'Descripción de la licencia y productos', tipo: 'text' }
+    ]
+  },
+  {
+    recurso: 'control_calidad',
+    area: 'Bodega',
+    titulo: 'Inspección y Control de Calidad',
+    descripcion: 'Revisión física de las cajas que llegan desde China: verifica costuras, etiquetas, estado del empaque y piezas aprobadas.',
+    campos: [
+      { nombre: 'pedido_id', etiqueta: 'ID Pedido revisado', tipo: 'number' },
+      { nombre: 'producto_id', etiqueta: 'ID Producto', tipo: 'number' },
+      { nombre: 'unidades_revisadas', etiqueta: 'Unidades inspeccionadas', tipo: 'number' },
+      {
+        nombre: 'resultado',
+        etiqueta: 'Dictamen de calidad',
+        tipo: 'select',
+        opciones: ['Aprobado', 'Con detalles', 'Rechazado']
+      },
+      { nombre: 'descripcion_inspeccion', etiqueta: 'Descripción detallada de la revisión', tipo: 'text' }
     ]
   },
   {
     recurso: 'almacenes',
+    area: 'Bodega',
     titulo: 'Almacenes y Bodegas',
+    descripcion: 'Control de sucursales, bodegas de almacenamiento y showrooms donde se resguarda la mercancía importada.',
     campos: [
       { nombre: 'nombre', etiqueta: 'Nombre del almacén', tipo: 'text' },
-      { nombre: 'ubicacion', etiqueta: 'Ubicación', tipo: 'text' },
-      { nombre: 'capacidad_maxima', etiqueta: 'Capacidad máxima', tipo: 'number' },
-      { nombre: 'responsable', etiqueta: 'Responsable', tipo: 'text' }
+      { nombre: 'ubicacion', etiqueta: 'Dirección / Ubicación', tipo: 'text' },
+      { nombre: 'capacidad_maxima', etiqueta: 'Capacidad máxima (unidades)', tipo: 'number' },
+      { nombre: 'responsable', etiqueta: 'Encargada de bodega', tipo: 'text' }
     ]
   },
   {
     recurso: 'inventario_almacen',
-    titulo: 'Inventario por Almacén',
+    area: 'Bodega',
+    titulo: 'Ubicación de Inventario por Pasillo',
+    descripcion: 'Distribución exacta de cada producto dentro de los pasillos, vitrinas y estantes de cada bodega.',
     campos: [
       { nombre: 'almacen_id', etiqueta: 'ID Almacén', tipo: 'number' },
       { nombre: 'producto_id', etiqueta: 'ID Producto', tipo: 'number' },
-      { nombre: 'cantidad', etiqueta: 'Cantidad', tipo: 'number' },
-      { nombre: 'pasillo', etiqueta: 'Pasillo / Ubicación', tipo: 'text' }
+      { nombre: 'cantidad', etiqueta: 'Cantidad en pasillo', tipo: 'number' },
+      { nombre: 'pasillo', etiqueta: 'Pasillo / Estante / Vitrina', tipo: 'text' }
     ]
   },
   {
     recurso: 'agentes_envio',
-    titulo: 'Agentes Navieros y Carga',
+    area: 'Logística',
+    titulo: 'Agentes Navieros y Carga Internacional',
+    descripcion: 'Empresas transportistas (aéreo, marítimo y exprés) que traen las cajas desde Guangzhou, Yiwu y Shenzhen.',
     campos: [
-      { nombre: 'nombre', etiqueta: 'Nombre de agencia', tipo: 'text' },
+      { nombre: 'nombre', etiqueta: 'Nombre de la agencia', tipo: 'text' },
       {
         nombre: 'tipo_transporte',
-        etiqueta: 'Transporte (Aéreo / Marítimo / Exprés)',
+        etiqueta: 'Modalidad de transporte',
         tipo: 'select',
         opciones: ['Aéreo', 'Marítimo', 'Exprés']
       },
       { nombre: 'tarifa_kg_usd', etiqueta: 'Tarifa por Kg (USD)', tipo: 'number' },
-      { nombre: 'contacto', etiqueta: 'Contacto', tipo: 'text' },
-      { nombre: 'pais_origen', etiqueta: 'País de origen', tipo: 'text' }
+      { nombre: 'contacto', etiqueta: 'Correo o WeChat del agente', tipo: 'text' },
+      { nombre: 'pais_origen', etiqueta: 'País de salida', tipo: 'text' }
     ]
   },
   {
     recurso: 'aduana_despachos',
-    titulo: 'Despachos de Aduana',
+    area: 'Logística',
+    titulo: 'DUA y Despachos de Aduana (Santamaría / Caldera)',
+    descripcion: 'Seguimiento de trámites aduanales de importación en Costa Rica, cálculo de impuestos y liberación de lotes.',
     campos: [
-      { nombre: 'pedido_id', etiqueta: 'ID Pedido', tipo: 'number' },
-      { nombre: 'agente_id', etiqueta: 'ID Agente de envío', tipo: 'number' },
-      { nombre: 'numero_pedimento', etiqueta: 'Número de pedimento', tipo: 'text' },
-      { nombre: 'arancel_mxn', etiqueta: 'Arancel (MXN)', tipo: 'number' },
+      { nombre: 'pedido_id', etiqueta: 'ID Pedido de importación', tipo: 'number' },
+      { nombre: 'agente_id', etiqueta: 'ID Agente naviero', tipo: 'number' },
+      { nombre: 'numero_pedimento', etiqueta: 'Número de DUA / Pedimento', tipo: 'text' },
+      { nombre: 'arancel_mxn', etiqueta: 'Impuestos aduanales (CRC ₡)', tipo: 'number' },
       {
         nombre: 'estado_aduana',
-        etiqueta: 'Estado aduanal',
+        etiqueta: 'Estado en aduana',
         tipo: 'select',
         opciones: ['en_revision', 'liberado', 'retenido']
       }
     ]
   },
   {
+    recurso: 'incidencias_envio',
+    area: 'Logística',
+    titulo: 'Bitácora de Incidencias de Envío',
+    descripcion: 'Registro de demoras en vuelos, revisiones aduanales o ajustes logísticos con la descripción del problema y su solución.',
+    campos: [
+      { nombre: 'pedido_id', etiqueta: 'ID Pedido afectado', tipo: 'number' },
+      { nombre: 'tipo_incidencia', etiqueta: 'Tipo de incidencia', tipo: 'text' },
+      { nombre: 'descripcion_problema', etiqueta: 'Descripción detallada del problema', tipo: 'text' },
+      { nombre: 'solucion_aplicada', etiqueta: 'Solución aplicada', tipo: 'text' },
+      {
+        nombre: 'estado_incidencia',
+        etiqueta: 'Estado actual',
+        tipo: 'select',
+        opciones: ['Abierta', 'En seguimiento', 'Resuelta']
+      }
+    ]
+  },
+  {
     recurso: 'clientes',
-    titulo: 'Clientas y Membresías',
+    area: 'Comercial',
+    titulo: 'Directorio de Clientas y Club VIP',
+    descripcion: 'Base de datos de compradoras frecuentes de la tienda con su ciudad, contacto y nivel de membresía.',
     campos: [
       { nombre: 'nombre', etiqueta: 'Nombre completo', tipo: 'text' },
       { nombre: 'correo', etiqueta: 'Correo electrónico', tipo: 'text' },
@@ -78,7 +189,7 @@ const CATALOGO_TABLAS = [
       { nombre: 'ciudad', etiqueta: 'Ciudad', tipo: 'text' },
       {
         nombre: 'nivel_membresia',
-        etiqueta: 'Membresía',
+        etiqueta: 'Nivel en el Club Ichigo',
         tipo: 'select',
         opciones: ['Bronce', 'Plata', 'Oro', 'VIP']
       }
@@ -86,13 +197,15 @@ const CATALOGO_TABLAS = [
   },
   {
     recurso: 'ventas',
-    titulo: 'Ventas Nacionales',
+    area: 'Comercial',
+    titulo: 'Pedidos de Venta a Clientas',
+    descripcion: 'Órdenes de compra realizadas por las clientas en Costa Rica (San José, Heredia, Alajuela, Cartago) sobre los artículos en inventario.',
     campos: [
-      { nombre: 'cliente_id', etiqueta: 'ID Cliente', tipo: 'number' },
-      { nombre: 'total', etiqueta: 'Total de venta', tipo: 'number' },
+      { nombre: 'cliente_id', etiqueta: 'ID Clienta', tipo: 'number' },
+      { nombre: 'total', etiqueta: 'Monto total de venta ($)', tipo: 'number' },
       {
         nombre: 'estado_venta',
-        etiqueta: 'Estado de venta',
+        etiqueta: 'Estado de la venta',
         tipo: 'select',
         opciones: ['pendiente', 'pagada', 'enviada', 'cancelada']
       }
@@ -100,47 +213,80 @@ const CATALOGO_TABLAS = [
   },
   {
     recurso: 'detalle_venta',
-    titulo: 'Detalles de Venta',
+    area: 'Comercial',
+    titulo: 'Desglose de Artículos Vendidos',
+    descripcion: 'Renglones individuales de cada venta nacional con el producto, unidades vendidas y precio unitario.',
     campos: [
       { nombre: 'venta_id', etiqueta: 'ID Venta', tipo: 'number' },
       { nombre: 'producto_id', etiqueta: 'ID Producto', tipo: 'number' },
-      { nombre: 'cantidad', etiqueta: 'Cantidad', tipo: 'number' },
-      { nombre: 'precio_unitario', etiqueta: 'Precio unitario', tipo: 'number' }
+      { nombre: 'cantidad', etiqueta: 'Cantidad vendida', tipo: 'number' },
+      { nombre: 'precio_unitario', etiqueta: 'Precio unitario ($)', tipo: 'number' }
+    ]
+  },
+  {
+    recurso: 'promociones_descuentos',
+    area: 'Comercial',
+    titulo: 'Promociones y Campañas de Temporada',
+    descripcion: 'Cupones y campañas de descuento por temporada con su descripción comercial y porcentaje aplicable.',
+    campos: [
+      { nombre: 'codigo', etiqueta: 'Código del cupón', tipo: 'text' },
+      { nombre: 'nombre_campana', etiqueta: 'Nombre de la campaña', tipo: 'text' },
+      { nombre: 'porcentaje_descuento', etiqueta: 'Descuento (%)', tipo: 'number' },
+      { nombre: 'descripcion', etiqueta: 'Descripción y condiciones de la promoción', tipo: 'text' },
+      { nombre: 'activa', etiqueta: 'Activa (1 = Sí, 0 = No)', tipo: 'number' }
     ]
   },
   {
     recurso: 'metodos_pago',
-    titulo: 'Métodos de Pago Internacional',
+    area: 'Finanzas',
+    titulo: 'Pasarelas y Métodos de Pago Internacional',
+    descripcion: 'Medios utilizados para liquidar compras en yuanes (Alipay, WeChat Pay, Wise) y su porcentaje de comisión.',
     campos: [
-      { nombre: 'nombre', etiqueta: 'Nombre del método', tipo: 'text' },
-      { nombre: 'comision_porcentaje', etiqueta: 'Comisión (%)', tipo: 'number' },
+      { nombre: 'nombre', etiqueta: 'Nombre de la pasarela', tipo: 'text' },
+      { nombre: 'comision_porcentaje', etiqueta: 'Comisión por transacción (%)', tipo: 'number' },
       { nombre: 'activo', etiqueta: 'Activo (1 = Sí, 0 = No)', tipo: 'number' }
     ]
   },
   {
     recurso: 'pagos_proveedor',
-    titulo: 'Pagos a Proveedores (CNY)',
+    area: 'Finanzas',
+    titulo: 'Transferencias y Pagos a Proveedores Chinos',
+    descripcion: 'Historial de pagos enviados a tiendas de Taobao y 1688 en yuanes (CNY), tipo de cambio aplicado y referencia.',
     campos: [
-      { nombre: 'pedido_id', etiqueta: 'ID Pedido', tipo: 'number' },
+      { nombre: 'pedido_id', etiqueta: 'ID Pedido liquidado', tipo: 'number' },
       { nombre: 'metodo_pago_id', etiqueta: 'ID Método de pago', tipo: 'number' },
-      { nombre: 'monto_cny', etiqueta: 'Monto (CNY)', tipo: 'number' },
-      { nombre: 'tipo_cambio', etiqueta: 'Tipo de cambio', tipo: 'number' },
-      { nombre: 'referencia', etiqueta: 'Referencia bancaria', tipo: 'text' }
+      { nombre: 'monto_cny', etiqueta: 'Monto pagado (CNY ¥)', tipo: 'number' },
+      { nombre: 'tipo_cambio', etiqueta: 'Tipo de cambio (MXN/CNY)', tipo: 'number' },
+      { nombre: 'referencia', etiqueta: 'Folio / Referencia de pago', tipo: 'text' }
     ]
   },
   {
     recurso: 'detalle_pedido',
-    titulo: 'Líneas de Detalle de Pedido',
+    area: 'Logística',
+    titulo: 'Líneas de Detalle de Pedidos de Importación',
+    descripcion: 'Renglones de cada pedido a China indicando qué producto se pidió, cuántas piezas y su costo unitario en yuanes.',
     campos: [
       { nombre: 'pedido_id', etiqueta: 'ID Pedido', tipo: 'number' },
       { nombre: 'producto_id', etiqueta: 'ID Producto', tipo: 'number' },
-      { nombre: 'cantidad', etiqueta: 'Cantidad', tipo: 'number' },
-      { nombre: 'precio_unitario_cny', etiqueta: 'Precio unitario (CNY)', tipo: 'number' }
+      { nombre: 'cantidad', etiqueta: 'Cantidad importada', tipo: 'number' },
+      { nombre: 'precio_unitario_cny', etiqueta: 'Costo unitario (CNY ¥)', tipo: 'number' }
+    ]
+  },
+  {
+    recurso: 'roles',
+    area: 'Personal',
+    titulo: 'Roles y Puestos del Equipo',
+    descripcion: 'Perfiles operativos dentro de la empresa (Dirección, Importaciones, Almacén y Ventas) con sus responsabilidades.',
+    campos: [
+      { nombre: 'nombre', etiqueta: 'Nombre del puesto / rol', tipo: 'text' },
+      { nombre: 'descripcion', etiqueta: 'Descripción de funciones', tipo: 'text' }
     ]
   },
   {
     recurso: 'usuarios',
-    titulo: 'Usuarios Registrados (Solo lectura)',
+    area: 'Personal',
+    titulo: 'Cuentas de Usuario con Acceso JWT',
+    descripcion: 'Personal registrado en el sistema con contraseña cifrada mediante bcryptjs y acceso protegido por token.',
     soloLectura: true,
     campos: []
   }
@@ -189,7 +335,10 @@ function Operaciones() {
   function abrirEditar(fila) {
     const iniciales = {};
     tablaActual.campos.forEach((c) => {
-      iniciales[c.nombre] = fila[c.nombre] !== null && fila[c.nombre] !== undefined ? String(fila[c.nombre]) : '';
+      iniciales[c.nombre] =
+        fila[c.nombre] !== null && fila[c.nombre] !== undefined
+          ? String(fila[c.nombre])
+          : '';
     });
     setValoresFormulario(iniciales);
     setRegistroEnEdicion(fila);
@@ -241,31 +390,40 @@ function Operaciones() {
 
   return (
     <div>
-      <div className="cabecera-pagina-crud">
-        <h1 className="titulo-pagina-crud">{tablaActual.titulo}</h1>
-        <div className="acciones-formulario">
-          <label htmlFor="selector-tabla-operaciones" className="etiqueta-busqueda">
-            Tabla:
-          </label>
-          <select
-            id="selector-tabla-operaciones"
-            className="select-sanrio"
-            value={indiceTabla}
-            onChange={(e) => setIndiceTabla(Number(e.target.value))}
-          >
-            {CATALOGO_TABLAS.map((t, idx) => (
-              <option key={t.recurso} value={idx}>
-                {t.titulo} ({t.recurso})
-              </option>
-            ))}
-          </select>
-
-          {!tablaActual.soloLectura && (
-            <button type="button" className="boton-pildora-gloss" onClick={abrirCrear}>
-              Agregar registro
-            </button>
-          )}
+      <div className="panel-selector-modulos">
+        <div className="titulo-selector-modulos">
+          Selecciona un módulo del sistema empresarial ({CATALOGO_TABLAS.length} módulos adicionales + 4 principales = 20 tablas):
         </div>
+        <div className="rejilla-botones-modulos">
+          {CATALOGO_TABLAS.map((tab, idx) => (
+            <button
+              key={tab.recurso}
+              type="button"
+              className={
+                idx === indiceTabla
+                  ? 'boton-modulo-tab boton-modulo-tab-activo'
+                  : 'boton-modulo-tab'
+              }
+              onClick={() => setIndiceTabla(idx)}
+            >
+              <span className="etiqueta-area-modulo">{tab.area}</span>
+              <span>{tab.titulo}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="cabecera-pagina-crud">
+        <div>
+          <h1 className="titulo-pagina-crud">{tablaActual.titulo}</h1>
+          <p className="descripcion-modulo-activa">{tablaActual.descripcion}</p>
+        </div>
+
+        {!tablaActual.soloLectura && (
+          <button type="button" className="boton-pildora-gloss" onClick={abrirCrear}>
+            Agregar en {tablaActual.recurso}
+          </button>
+        )}
       </div>
 
       {errorBackend && (
@@ -285,7 +443,7 @@ function Operaciones() {
         <form className="panel-formulario" onSubmit={guardarRegistro}>
           <h2 className="titulo-formulario">
             {registroEnEdicion
-              ? `Editar registro #${registroEnEdicion.id}`
+              ? `Editar registro #${registroEnEdicion.id} en ${tablaActual.titulo}`
               : `Nuevo registro en ${tablaActual.titulo}`}
           </h2>
 
@@ -299,7 +457,10 @@ function Operaciones() {
                     className="select-sanrio"
                     value={valoresFormulario[campo.nombre] || ''}
                     onChange={(e) =>
-                      setValoresFormulario((prev) => ({ ...prev, [campo.nombre]: e.target.value }))
+                      setValoresFormulario((prev) => ({
+                        ...prev,
+                        [campo.nombre]: e.target.value
+                      }))
                     }
                   >
                     {campo.opciones.map((op) => (
@@ -316,7 +477,10 @@ function Operaciones() {
                     className="input-sanrio"
                     value={valoresFormulario[campo.nombre] ?? ''}
                     onChange={(e) =>
-                      setValoresFormulario((prev) => ({ ...prev, [campo.nombre]: e.target.value }))
+                      setValoresFormulario((prev) => ({
+                        ...prev,
+                        [campo.nombre]: e.target.value
+                      }))
                     }
                   />
                 )}
@@ -326,7 +490,7 @@ function Operaciones() {
 
           <div className="acciones-formulario">
             <button type="submit" className="boton-pildora-gloss">
-              Guardar
+              Guardar cambios
             </button>
             <button
               type="button"
@@ -344,7 +508,7 @@ function Operaciones() {
           <thead>
             <tr>
               {columnas.map((col) => (
-                <th key={col}>{col}</th>
+                <th key={col}>{ETIQUETAS_COLUMNAS[col] || col}</th>
               ))}
               {!tablaActual.soloLectura && <th>Acciones</th>}
             </tr>
@@ -358,7 +522,11 @@ function Operaciones() {
               registros.map((fila) => (
                 <tr key={fila.id}>
                   {columnas.map((col) => (
-                    <td key={col}>{fila[col] !== null && fila[col] !== undefined ? String(fila[col]) : '—'}</td>
+                    <td key={col}>
+                      {fila[col] !== null && fila[col] !== undefined
+                        ? String(fila[col])
+                        : '—'}
+                    </td>
                   ))}
                   {!tablaActual.soloLectura && (
                     <td>
@@ -405,6 +573,7 @@ function Operaciones() {
         nombreElemento={
           registroParaEliminar
             ? registroParaEliminar.nombre ||
+              registroParaEliminar.nombre_campana ||
               registroParaEliminar.numero_pedimento ||
               registroParaEliminar.referencia ||
               `Registro #${registroParaEliminar.id}`
