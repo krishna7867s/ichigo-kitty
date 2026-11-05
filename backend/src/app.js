@@ -1,14 +1,21 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
 const express = require('express');
 const cors = require('cors');
 const db = require('./models/db');
 
 // Importar modelos en orden de dependencia para crear las tablas si no existen
+require('./models/usuario');
 require('./models/proveedorModel');
 require('./models/categoriaModel');
 require('./models/productoModel');
 require('./models/pedidoModel');
 require('./models/detallePedidoModel');
 
+const authMiddleware = require('./middlewares/authMiddleware');
+const authController = require('./controllers/authController');
+const authRoutes = require('./routes/authRoutes');
 const proveedorRoutes = require('./routes/proveedorRoutes');
 const categoriaRoutes = require('./routes/categoriaRoutes');
 const productoRoutes = require('./routes/productoRoutes');
@@ -68,21 +75,17 @@ function sembrarDatosIniciales() {
       INSERT INTO detalle_pedido (pedido_id, producto_id, cantidad, precio_unitario_cny)
       VALUES (?, ?, ?, ?)
     `);
-    // Detalles del pedido 1 (Sakura Plush Studio)
     insertarDetalle.run(1, 1, 10, 28.5);
     insertarDetalle.run(1, 2, 8, 35.0);
     insertarDetalle.run(1, 6, 15, 9.5);
 
-    // Detalles del pedido 2 (Yiwu Kawaii Craft Factory)
     insertarDetalle.run(2, 4, 30, 4.5);
     insertarDetalle.run(2, 5, 20, 6.0);
     insertarDetalle.run(2, 9, 40, 3.8);
 
-    // Detalles del pedido 3 (Mochi Stationery Store)
     insertarDetalle.run(3, 7, 25, 5.2);
     insertarDetalle.run(3, 8, 12, 12.0);
 
-    // Detalles del pedido 4 (Lucky Neko Global Shop)
     insertarDetalle.run(4, 3, 10, 24.0);
     insertarDetalle.run(4, 10, 15, 11.0);
   });
@@ -97,12 +100,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/proveedores', proveedorRoutes);
-app.use('/api/categorias', categoriaRoutes);
-app.use('/api/productos', productoRoutes);
-app.use('/api/pedidos', pedidoRoutes);
-app.use('/api/detalle_pedido', detallePedidoRoutes);
-app.use('/api/detalles_pedido', detallePedidoRoutes);
+// Rutas públicas de autenticación (register y login) y ruta protegida /api/auth/me
+app.get('/api/auth/me', authMiddleware, authController.obtenerPerfil);
+app.use('/api/auth', authRoutes);
+
+// Rutas protegidas de las 5 entidades
+app.use('/api/proveedores', authMiddleware, proveedorRoutes);
+app.use('/api/categorias', authMiddleware, categoriaRoutes);
+app.use('/api/productos', authMiddleware, productoRoutes);
+app.use('/api/pedidos', authMiddleware, pedidoRoutes);
+app.use('/api/detalle_pedido', authMiddleware, detallePedidoRoutes);
+app.use('/api/detalles_pedido', authMiddleware, detallePedidoRoutes);
 
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
@@ -112,4 +120,3 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
-

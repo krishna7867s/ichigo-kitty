@@ -1,13 +1,111 @@
 @baseUrl = http://localhost:3001/api
 
-### Obtener todos los proveedores
+### Registrar un usuario nuevo (201)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Sakura Kinomoto",
+  "correo": "sakura@kittyimport.com",
+  "password": "mipassword123"
+}
+
+### Iniciar sesión y guardar token en variable (200)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "sakura@kittyimport.com",
+  "password": "mipassword123"
+}
+
+### Variable con el token obtenido del login
+@token = {{login.response.body.token}}
+
+### Obtener el usuario autenticado (200)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{token}}
+
+### Caso de error: Registro con correo repetido (400)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Sakura Duplicada",
+  "correo": "sakura@kittyimport.com",
+  "password": "mipassword123"
+}
+
+### Caso de error: Registro con contraseña corta menor a 8 caracteres (400)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Usuario Clave Corta",
+  "correo": "corto@kittyimport.com",
+  "password": "12345"
+}
+
+### Caso de error: Login con contraseña incorrecta (401)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "sakura@kittyimport.com",
+  "password": "passwordequivocado"
+}
+
+### Caso de error: Petición a ruta protegida sin token (401)
+GET {{baseUrl}}/productos
+
+### Caso de error: Petición con token inventado (401)
+GET {{baseUrl}}/productos
+Authorization: Bearer token.inventado.invalido
+
+### Caso de error: GET de un ID inexistente (404)
+GET {{baseUrl}}/productos/99999
+Authorization: Bearer {{token}}
+
+### Caso de error: POST con un campo obligatorio vacío (400)
+POST {{baseUrl}}/categorias
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "descripcion": "Categoría sin nombre"
+}
+
+### Caso de error: DELETE de una categoría con productos asociados (409)
+DELETE {{baseUrl}}/categorias/1
+Authorization: Bearer {{token}}
+
+### Caso de error: POST de producto con categoria_id inexistente (400)
+POST {{baseUrl}}/productos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Peluche Prueba Categoría Inexistente",
+  "precio_compra_cny": 20,
+  "precio_venta": 150,
+  "stock": 5,
+  "categoria_id": 9999,
+  "proveedor_id": 1
+}
+
+### Obtener todos los proveedores (200)
 GET {{baseUrl}}/proveedores
+Authorization: Bearer {{token}}
 
-### Obtener un proveedor por ID
+### Obtener un proveedor por ID (200)
 GET {{baseUrl}}/proveedores/1
+Authorization: Bearer {{token}}
 
-### Crear un proveedor
+### Crear un proveedor (201)
 POST {{baseUrl}}/proveedores
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -18,8 +116,9 @@ Content-Type: application/json
   "calificacion": 5
 }
 
-### Actualizar un proveedor
+### Actualizar un proveedor (200)
 PUT {{baseUrl}}/proveedores/5
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -30,17 +129,21 @@ Content-Type: application/json
   "calificacion": 5
 }
 
-### Eliminar un proveedor
+### Eliminar un proveedor (204)
 DELETE {{baseUrl}}/proveedores/5
+Authorization: Bearer {{token}}
 
-### Obtener todas las categorías
+### Obtener todas las categorías (200)
 GET {{baseUrl}}/categorias
+Authorization: Bearer {{token}}
 
-### Obtener una categoría por ID
+### Obtener una categoría por ID (200)
 GET {{baseUrl}}/categorias/1
+Authorization: Bearer {{token}}
 
-### Crear una categoría
+### Crear una categoría (201)
 POST {{baseUrl}}/categorias
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -48,8 +151,9 @@ Content-Type: application/json
   "descripcion": "Libretas, plumas de gel y notas adhesivas kawaii"
 }
 
-### Actualizar una categoría
+### Actualizar una categoría (200)
 PUT {{baseUrl}}/categorias/5
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -57,17 +161,21 @@ Content-Type: application/json
   "descripcion": "Libretas, plumas de gel, estuches y notas adhesivas"
 }
 
-### Eliminar una categoría
+### Eliminar una categoría (204)
 DELETE {{baseUrl}}/categorias/5
+Authorization: Bearer {{token}}
 
-### Obtener todos los productos
+### Obtener todos los productos (200)
 GET {{baseUrl}}/productos
+Authorization: Bearer {{token}}
 
-### Obtener un producto por ID
+### Obtener un producto por ID (200)
 GET {{baseUrl}}/productos/1
+Authorization: Bearer {{token}}
 
-### Crear un producto
+### Crear un producto (201)
 POST {{baseUrl}}/productos
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -79,8 +187,9 @@ Content-Type: application/json
   "proveedor_id": 1
 }
 
-### Actualizar un producto
+### Actualizar un producto (200)
 PUT {{baseUrl}}/productos/11
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -92,17 +201,21 @@ Content-Type: application/json
   "proveedor_id": 1
 }
 
-### Eliminar un producto
+### Eliminar un producto (204)
 DELETE {{baseUrl}}/productos/11
+Authorization: Bearer {{token}}
 
-### Obtener todos los pedidos
+### Obtener todos los pedidos (200)
 GET {{baseUrl}}/pedidos
+Authorization: Bearer {{token}}
 
-### Obtener un pedido por ID
+### Obtener un pedido por ID (200)
 GET {{baseUrl}}/pedidos/2
+Authorization: Bearer {{token}}
 
-### Crear un pedido
+### Crear un pedido (201)
 POST {{baseUrl}}/pedidos
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -112,8 +225,9 @@ Content-Type: application/json
   "costo_envio": 120
 }
 
-### Actualizar un pedido (cambiar a recibido suma stock a los productos de su detalle)
+### Actualizar un pedido (200)
 PUT {{baseUrl}}/pedidos/2
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -123,17 +237,21 @@ Content-Type: application/json
   "costo_envio": 145
 }
 
-### Eliminar un pedido
+### Eliminar un pedido (204)
 DELETE {{baseUrl}}/pedidos/5
+Authorization: Bearer {{token}}
 
-### Obtener todos los detalles de pedido
+### Obtener todos los detalles de pedido (200)
 GET {{baseUrl}}/detalle_pedido
+Authorization: Bearer {{token}}
 
-### Obtener un detalle de pedido por ID
+### Obtener un detalle de pedido por ID (200)
 GET {{baseUrl}}/detalle_pedido/1
+Authorization: Bearer {{token}}
 
-### Crear un detalle de pedido
+### Crear un detalle de pedido (201)
 POST {{baseUrl}}/detalle_pedido
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -143,8 +261,9 @@ Content-Type: application/json
   "precio_unitario_cny": 28.5
 }
 
-### Actualizar un detalle de pedido
+### Actualizar un detalle de pedido (200)
 PUT {{baseUrl}}/detalle_pedido/11
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -154,6 +273,6 @@ Content-Type: application/json
   "precio_unitario_cny": 27.5
 }
 
-### Eliminar un detalle de pedido
+### Eliminar un detalle de pedido (204)
 DELETE {{baseUrl}}/detalle_pedido/11
-
+Authorization: Bearer {{token}}

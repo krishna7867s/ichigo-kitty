@@ -1,11 +1,60 @@
 import axios from 'axios';
 
+export const CLAVE_TOKEN = 'token_kitty';
+
 const clienteApi = axios.create({
   baseURL: 'http://localhost:3001/api',
   headers: {
     'Content-Type': 'application/json'
   }
 });
+
+clienteApi.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const token = window.localStorage.getItem(CLAVE_TOKEN);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
+clienteApi.interceptors.response.use(
+  (respuesta) => respuesta,
+  (error) => {
+    const estado = error.response?.status;
+    const url = error.config?.url || '';
+    const esRutaLoginORegistro =
+      url.includes('/auth/login') || url.includes('/auth/register');
+
+    if (estado === 401 && !esRutaLoginORegistro) {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(CLAVE_TOKEN);
+        window.dispatchEvent(new Event('sesion_expirada_kitty'));
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/registro') {
+          window.location.href = '/login';
+        }
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export async function registrarUsuario(datos) {
+  const respuesta = await clienteApi.post('/auth/register', datos);
+  return respuesta.data;
+}
+
+export async function loginUsuario(correo, password) {
+  const respuesta = await clienteApi.post('/auth/login', { correo, password });
+  return respuesta.data;
+}
+
+export async function obtenerUsuarioActual() {
+  const respuesta = await clienteApi.get('/auth/me');
+  return respuesta.data;
+}
 
 export async function obtenerProveedores() {
   const respuesta = await clienteApi.get('/proveedores');
@@ -128,3 +177,4 @@ export async function eliminarDetallePedido(id) {
   await clienteApi.delete(`/detalle_pedido/${id}`);
 }
 
+export default clienteApi;

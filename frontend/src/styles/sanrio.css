@@ -54,6 +54,44 @@ body {
   justify-content: space-between;
   padding: 12px 0 8px;
   border-bottom: 1px solid var(--rosa-claro);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.encabezado-sin-borde {
+  border-bottom: none;
+  padding: 12px 0;
+}
+
+.controles-encabezado-derecha {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bloque-usuario-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+}
+
+.nombre-usuario-encabezado {
+  color: var(--texto-oscuro);
+  font-weight: 600;
+}
+
+.enlace-cerrar-sesion {
+  color: var(--rosa-fuerte);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.enlace-cerrar-sesion:hover {
+  text-decoration: underline;
+  color: var(--rosa-titular);
 }
 
 .logo-kitty {
@@ -767,7 +805,65 @@ body {
   color: var(--rosa-fuerte);
 }
 
+.contenedor-autenticacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 18px 0;
+}
+
+.envoltura-panel-auth {
+  width: 100%;
+  max-width: 420px;
+}
+
+.panel-autenticacion {
+  background-color: var(--blanco);
+  border: 1px solid var(--rosa-claro);
+  border-radius: 12px;
+  padding: 22px 24px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.titulo-autenticacion {
+  font-family: 'Pacifico', cursive;
+  font-size: 32px;
+  color: var(--rosa-titular);
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.campo-auth {
+  margin-bottom: 12px;
+}
+
+.acciones-auth {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.columna-kitty-auth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.imagen-kitty-auth {
+  height: 260px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
 @media (max-width: 760px) {
+  .contenedor-autenticacion {
+    flex-direction: column;
+  }
   .seccion-hero {
     flex-direction: column;
     text-align: center;

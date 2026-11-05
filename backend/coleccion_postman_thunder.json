@@ -1,0 +1,467 @@
+{
+  "info": {
+    "name": "Ichigo Kitty (Kitty Import) - API Completa + Auth JWT",
+    "_postman_id": "a1b2c3d4-e5f6-4789-9012-3456789abcde",
+    "description": "Colección de pruebas para Postman y Thunder Client con Auth JWT, CRUDs de las 5 entidades y casos de error 400, 401, 404 y 409.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Autenticación (JWT)",
+      "item": [
+        {
+          "name": "POST /auth/register - Registrar usuario (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sakura Kinomoto\",\n  \"correo\": \"sakura@kittyimport.com\",\n  \"password\": \"mipassword123\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "POST /auth/login - Iniciar sesión (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) { pm.collectionVariables.set('token', res.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"sakura@kittyimport.com\",\n  \"password\": \"mipassword123\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "GET /auth/me - Obtener perfil autenticado (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Casos de Error (400, 401, 404, 409)",
+      "item": [
+        {
+          "name": "401 - Petición sin token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/productos"
+          }
+        },
+        {
+          "name": "401 - Petición con token inventado",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer token.inventado.invalido" }],
+            "url": "{{baseUrl}}/productos"
+          }
+        },
+        {
+          "name": "400 - Registro con correo repetido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sakura Duplicada\",\n  \"correo\": \"sakura@kittyimport.com\",\n  \"password\": \"mipassword123\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "400 - Registro con contraseña corta (< 8 caracteres)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Clave Corta\",\n  \"correo\": \"corto@kittyimport.com\",\n  \"password\": \"12345\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "401 - Login con contraseña incorrecta",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"sakura@kittyimport.com\",\n  \"password\": \"claveincorrecta\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "404 - GET de un ID inexistente",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/productos/99999"
+          }
+        },
+        {
+          "name": "400 - POST con un campo obligatorio vacío",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"\",\n  \"descripcion\": \"Categoría sin nombre\"\n}"
+            },
+            "url": "{{baseUrl}}/categorias"
+          }
+        },
+        {
+          "name": "409 - DELETE de una categoría con productos asociados",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/categorias/1"
+          }
+        },
+        {
+          "name": "400 - POST de producto con categoria_id inexistente",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Peluche Prueba\",\n  \"precio_compra_cny\": 20,\n  \"precio_venta\": 150,\n  \"stock\": 5,\n  \"categoria_id\": 9999,\n  \"proveedor_id\": 1\n}"
+            },
+            "url": "{{baseUrl}}/productos"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Proveedores (CRUD)",
+      "item": [
+        {
+          "name": "GET /proveedores (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/proveedores"
+          }
+        },
+        {
+          "name": "GET /proveedores/:id (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/proveedores/1"
+          }
+        },
+        {
+          "name": "POST /proveedores (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Kawaii Bear Wholesale\",\n  \"plataforma\": \"1688\",\n  \"ciudad\": \"Dongguan\",\n  \"contacto\": \"wechat: kawaiibear_dg\",\n  \"calificacion\": 5\n}"
+            },
+            "url": "{{baseUrl}}/proveedores"
+          }
+        },
+        {
+          "name": "PUT /proveedores/:id (200)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Kawaii Bear Wholesale Oficial\",\n  \"plataforma\": \"1688\",\n  \"ciudad\": \"Dongguan\",\n  \"contacto\": \"wechat: kawaiibear_oficial\",\n  \"calificacion\": 5\n}"
+            },
+            "url": "{{baseUrl}}/proveedores/5"
+          }
+        },
+        {
+          "name": "DELETE /proveedores/:id (204)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/proveedores/5"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Categorías (CRUD)",
+      "item": [
+        {
+          "name": "GET /categorias (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/categorias"
+          }
+        },
+        {
+          "name": "GET /categorias/:id (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/categorias/1"
+          }
+        },
+        {
+          "name": "POST /categorias (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Papelería\",\n  \"descripcion\": \"Libretas, plumas de gel y notas adhesivas kawaii\"\n}"
+            },
+            "url": "{{baseUrl}}/categorias"
+          }
+        },
+        {
+          "name": "PUT /categorias/:id (200)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Papelería Kawaii\",\n  \"descripcion\": \"Libretas, plumas de gel, estuches y notas adhesivas\"\n}"
+            },
+            "url": "{{baseUrl}}/categorias/5"
+          }
+        },
+        {
+          "name": "DELETE /categorias/:id (204)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/categorias/5"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Productos (CRUD)",
+      "item": [
+        {
+          "name": "GET /productos (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/productos"
+          }
+        },
+        {
+          "name": "GET /productos/:id (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/productos/1"
+          }
+        },
+        {
+          "name": "POST /productos (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Peluche Gatito Taiyaki 20cm\",\n  \"precio_compra_cny\": 22.5,\n  \"precio_venta\": 185,\n  \"stock\": 10,\n  \"categoria_id\": 1,\n  \"proveedor_id\": 1\n}"
+            },
+            "url": "{{baseUrl}}/productos"
+          }
+        },
+        {
+          "name": "PUT /productos/:id (200)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Peluche Gatito Taiyaki 20cm Edición Especial\",\n  \"precio_compra_cny\": 24.0,\n  \"precio_venta\": 195,\n  \"stock\": 14,\n  \"categoria_id\": 1,\n  \"proveedor_id\": 1\n}"
+            },
+            "url": "{{baseUrl}}/productos/11"
+          }
+        },
+        {
+          "name": "DELETE /productos/:id (204)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/productos/11"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Pedidos (CRUD)",
+      "item": [
+        {
+          "name": "GET /pedidos (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/pedidos"
+          }
+        },
+        {
+          "name": "GET /pedidos/:id (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/pedidos/2"
+          }
+        },
+        {
+          "name": "POST /pedidos (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proveedor_id\": 1,\n  \"estado\": \"pedido\",\n  \"rastreo\": \"SF9988776655CN\",\n  \"costo_envio\": 120\n}"
+            },
+            "url": "{{baseUrl}}/pedidos"
+          }
+        },
+        {
+          "name": "PUT /pedidos/:id (200)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proveedor_id\": 2,\n  \"estado\": \"recibido\",\n  \"rastreo\": \"YT2409182736CN\",\n  \"costo_envio\": 145\n}"
+            },
+            "url": "{{baseUrl}}/pedidos/2"
+          }
+        },
+        {
+          "name": "DELETE /pedidos/:id (204)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/pedidos/5"
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Detalle de Pedido (CRUD)",
+      "item": [
+        {
+          "name": "GET /detalle_pedido (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/detalle_pedido"
+          }
+        },
+        {
+          "name": "GET /detalle_pedido/:id (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/detalle_pedido/1"
+          }
+        },
+        {
+          "name": "POST /detalle_pedido (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedido_id\": 3,\n  \"producto_id\": 1,\n  \"cantidad\": 5,\n  \"precio_unitario_cny\": 28.5\n}"
+            },
+            "url": "{{baseUrl}}/detalle_pedido"
+          }
+        },
+        {
+          "name": "PUT /detalle_pedido/:id (200)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedido_id\": 3,\n  \"producto_id\": 1,\n  \"cantidad\": 8,\n  \"precio_unitario_cny\": 27.5\n}"
+            },
+            "url": "{{baseUrl}}/detalle_pedido/11"
+          }
+        },
+        {
+          "name": "DELETE /detalle_pedido/:id (204)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/detalle_pedido/11"
+          }
+        }
+      ]
+    }
+  ]
+}
