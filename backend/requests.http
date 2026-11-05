@@ -1,0 +1,159 @@
+@baseUrl = http://localhost:3001/api
+
+### Obtener todos los proveedores
+GET {{baseUrl}}/proveedores
+
+### Obtener un proveedor por ID
+GET {{baseUrl}}/proveedores/1
+
+### Crear un proveedor
+POST {{baseUrl}}/proveedores
+Content-Type: application/json
+
+{
+  "nombre": "Kawaii Bear Wholesale",
+  "plataforma": "1688",
+  "ciudad": "Dongguan",
+  "contacto": "wechat: kawaiibear_dg",
+  "calificacion": 5
+}
+
+### Actualizar un proveedor
+PUT {{baseUrl}}/proveedores/5
+Content-Type: application/json
+
+{
+  "nombre": "Kawaii Bear Wholesale Oficial",
+  "plataforma": "1688",
+  "ciudad": "Dongguan",
+  "contacto": "wechat: kawaiibear_oficial",
+  "calificacion": 5
+}
+
+### Eliminar un proveedor
+DELETE {{baseUrl}}/proveedores/5
+
+### Obtener todas las categorías
+GET {{baseUrl}}/categorias
+
+### Obtener una categoría por ID
+GET {{baseUrl}}/categorias/1
+
+### Crear una categoría
+POST {{baseUrl}}/categorias
+Content-Type: application/json
+
+{
+  "nombre": "Papelería",
+  "descripcion": "Libretas, plumas de gel y notas adhesivas kawaii"
+}
+
+### Actualizar una categoría
+PUT {{baseUrl}}/categorias/5
+Content-Type: application/json
+
+{
+  "nombre": "Papelería Kawaii",
+  "descripcion": "Libretas, plumas de gel, estuches y notas adhesivas"
+}
+
+### Eliminar una categoría
+DELETE {{baseUrl}}/categorias/5
+
+### Obtener todos los productos
+GET {{baseUrl}}/productos
+
+### Obtener un producto por ID
+GET {{baseUrl}}/productos/1
+
+### Crear un producto
+POST {{baseUrl}}/productos
+Content-Type: application/json
+
+{
+  "nombre": "Peluche Gatito Taiyaki 20cm",
+  "precio_compra_cny": 22.5,
+  "precio_venta": 185,
+  "stock": 10,
+  "categoria_id": 1,
+  "proveedor_id": 1
+}
+
+### Actualizar un producto
+PUT {{baseUrl}}/productos/11
+Content-Type: application/json
+
+{
+  "nombre": "Peluche Gatito Taiyaki 20cm Edición Especial",
+  "precio_compra_cny": 24.0,
+  "precio_venta": 195,
+  "stock": 14,
+  "categoria_id": 1,
+  "proveedor_id": 1
+}
+
+### Eliminar un producto
+DELETE {{baseUrl}}/productos/11
+
+### Obtener todos los pedidos
+GET {{baseUrl}}/pedidos
+
+### Obtener un pedido por ID
+GET {{baseUrl}}/pedidos/2
+
+### Crear un pedido
+POST {{baseUrl}}/pedidos
+Content-Type: application/json
+
+{
+  "proveedor_id": 1,
+  "estado": "pedido",
+  "rastreo": "SF9988776655CN",
+  "costo_envio": 120
+}
+
+### Actualizar un pedido (cambiar a recibido suma stock a los productos de su detalle)
+PUT {{baseUrl}}/pedidos/2
+Content-Type: application/json
+
+{
+  "proveedor_id": 2,
+  "estado": "recibido",
+  "rastreo": "YT2409182736CN",
+  "costo_envio": 145
+}
+
+### Eliminar un pedido
+DELETE {{baseUrl}}/pedidos/5
+
+### Obtener todos los detalles de pedido
+GET {{baseUrl}}/detalle_pedido
+
+### Obtener un detalle de pedido por ID
+GET {{baseUrl}}/detalle_pedido/1
+
+### Crear un detalle de pedido
+POST {{baseUrl}}/detalle_pedido
+Content-Type: application/json
+
+{
+  "pedido_id": 3,
+  "producto_id": 1,
+  "cantidad": 5,
+  "precio_unitario_cny": 28.5
+}
+
+### Actualizar un detalle de pedido
+PUT {{baseUrl}}/detalle_pedido/11
+Content-Type: application/json
+
+{
+  "pedido_id": 3,
+  "producto_id": 1,
+  "cantidad": 8,
+  "precio_unitario_cny": 27.5
+}
+
+### Eliminar un detalle de pedido
+DELETE {{baseUrl}}/detalle_pedido/11
+
