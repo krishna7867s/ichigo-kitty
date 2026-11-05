@@ -102,7 +102,6 @@ function Inicio() {
               alt="Ichigo Kitty"
               className="imagen-kitty"
             />
-            <div className="sombra-eliptica-kitty" aria-hidden="true" />
           </div>
 
           <svg
