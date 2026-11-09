@@ -49,7 +49,8 @@ function Inicio() {
     }));
 
   const cantidadEnTransito = pedidos.filter((p) => p.estado === 'en_transito').length;
-  const cantidadStockBajo = productos.filter((p) => p.stock < 5).length;
+  const productosStockBajo = productos.filter((p) => p.stock <= 12);
+  const cantidadStockBajo = productosStockBajo.length;
   const cantidadProveedores = proveedores.length;
 
   return (
@@ -160,9 +161,9 @@ function Inicio() {
         />
         <Tarjeta
           numero={cantidadStockBajo}
-          titulo="Stock menor a 5"
-          detalle="Productos con pocas unidades disponibles en almacén."
-          textoEnlace="Revisar stock bajo"
+          titulo="Alertas de stock (<= 12)"
+          detalle="Productos que requieren reposición urgente desde China."
+          textoEnlace="Revisar alertas de stock"
           destino="/productos"
         />
         <Tarjeta
@@ -173,6 +174,38 @@ function Inicio() {
           destino="/proveedores"
         />
       </section>
+
+      {productosStockBajo.length > 0 && (
+        <section className="panel-alerta-stock-inicio" aria-label="Alertas automáticas de stock bajo">
+          <div className="cabecera-alerta-stock">
+            <strong>
+              Alerta Automática de Reposición a China ({productosStockBajo.length} artículos con 12 unidades o menos en bodega de San José)
+            </strong>
+            <div className="acciones-cabecera-multiple">
+              <Link to="/herramientas" className="enlace-accion-alerta">
+                Simular arancel DUA TICA
+              </Link>
+              <Link to="/pedidos" className="enlace-accion-alerta">
+                Crear orden de compra
+              </Link>
+            </div>
+          </div>
+          <div className="lista-alertas-stock-grid">
+            {productosStockBajo.map((item) => (
+              <div key={item.id} className="item-alerta-stock">
+                <div className="item-alerta-titulo">{item.nombre}</div>
+                <div className="item-alerta-meta">
+                  <span>Stock actual: <strong>{item.stock} uds.</strong></span>
+                  <span>Costo China: <strong>¥{Number(item.precio_compra_cny).toFixed(2)} CNY</strong></span>
+                </div>
+                <div className="item-alerta-proveedor">
+                  Proveedor: {item.proveedor_nombre || 'Taobao / 1688'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="contenedor-barra-rosa" aria-label="Mapa de los 20 módulos del sistema">
         <div className="barra-rosa-gloss">

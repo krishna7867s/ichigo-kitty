@@ -8,10 +8,51 @@ import {
 
 const AuthContext = createContext(null);
 
+export const ROLES_SISTEMA = {
+  'Directora General': {
+    nombre: 'Directora General',
+    etiqueta: 'Directora General (Acceso Total)',
+    puedeEliminar: true,
+    puedeEditarCostos: true,
+    descripcion: 'Autorización total sobre compras en Taobao/1688, liberación de DUA en Aduana TICA y eliminación de registros.'
+  },
+  'Encargada de Importación': {
+    nombre: 'Encargada de Importación',
+    etiqueta: 'Encargada de Aduana TICA',
+    puedeEliminar: false,
+    puedeEditarCostos: true,
+    descripcion: 'Autorizada para gestionar pedidos en tránsito, cálculo de aranceles en colones (₡) y seguimiento naviero.'
+  },
+  'Coordinadora de Ventas': {
+    nombre: 'Coordinadora de Ventas',
+    etiqueta: 'Ventas & SINPE Móvil',
+    puedeEliminar: false,
+    puedeEditarCostos: false,
+    descripcion: 'Autorizada para facturación en colones, generación de comprobantes SINPE Móvil y guías de Correos de Costa Rica.'
+  },
+  'Almacenista': {
+    nombre: 'Almacenista',
+    etiqueta: 'Bodega San José / Heredia',
+    puedeEliminar: false,
+    puedeEditarCostos: false,
+    descripcion: 'Autorizada para conteo de stock en pasillos, recepción de cajas y dictámenes de control de calidad.'
+  }
+};
+
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem(CLAVE_TOKEN) || '');
   const [usuario, setUsuario] = useState(null);
   const [cargandoSesion, setCargandoSesion] = useState(() => Boolean(localStorage.getItem(CLAVE_TOKEN)));
+  const [rolActivo, setRolActivo] = useState(
+    () => localStorage.getItem('rol_kitty_cr') || 'Directora General'
+  );
+
+  function cambiarRolActivo(nuevoRol) {
+    if (ROLES_SISTEMA[nuevoRol]) {
+      localStorage.setItem('rol_kitty_cr', nuevoRol);
+      setRolActivo(nuevoRol);
+    }
+  }
 
   useEffect(() => {
     function manejarExpiracion() {
@@ -78,6 +119,7 @@ export function AuthProvider({ children }) {
   }
 
   const autenticado = Boolean(token);
+  const permisosActuales = ROLES_SISTEMA[rolActivo] || ROLES_SISTEMA['Directora General'];
 
   return (
     <AuthContext.Provider
@@ -86,6 +128,9 @@ export function AuthProvider({ children }) {
         usuario,
         autenticado,
         cargandoSesion,
+        rolActivo,
+        permisosActuales,
+        cambiarRolActivo,
         iniciarSesion,
         registrar,
         cerrarSesion
@@ -99,4 +144,3 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
-

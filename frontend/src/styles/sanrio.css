@@ -959,6 +959,336 @@ body {
   color: var(--texto-oscuro);
 }
 
+/* Selector de rol en encabezado y franja de permisos */
+.selector-rol-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.select-rol-sanrio {
+  height: 22px;
+  border: 1px solid var(--rosa-fuerte);
+  border-radius: 4px;
+  padding: 0 6px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--rosa-titular);
+  background-color: var(--rosa-fila);
+}
+
+.franja-rol-informativa {
+  background-color: var(--blanco);
+  border: 1.5px solid var(--rosa-claro);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--texto-oscuro);
+}
+
+.detalle-permisos-rol {
+  color: var(--rosa-titular);
+  font-weight: 700;
+}
+
+.acciones-cabecera-multiple {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.subtitulo-herramienta {
+  font-size: 13px;
+  color: var(--texto-oscuro);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* Calculadora de Importacion China -> Costa Rica */
+.panel-calculadora-cr {
+  background-color: var(--blanco);
+  border: 1.5px solid var(--rosa-claro);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.rejilla-resultados-aduana {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1.5px dashed var(--rosa-claro);
+}
+
+.caja-resultado-aduana {
+  background-color: var(--rosa-fila);
+  border: 1px solid var(--rosa-claro);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.caja-resultado-destacada {
+  background-color: var(--rosa-pastel-caja);
+  border: 2px solid var(--rosa-fuerte);
+}
+
+.etiqueta-resultado-aduana {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 12px;
+  color: var(--rosa-titular);
+}
+
+.valor-resultado-aduana {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 20px;
+  color: var(--texto-oscuro);
+}
+
+.subvalor-resultado-aduana {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--texto-pie);
+}
+
+/* Generador de Comprobante SINPE Movil y Correos de Costa Rica */
+.rejilla-generador-sinpe {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.ticket-sinpe-kawaii {
+  background-color: var(--blanco);
+  border: 2px solid var(--rosa-fuerte);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ticket-sinpe-encabezado {
+  background: linear-gradient(180deg, #ff7fbf 0%, #f454a5 49%, #e6358f 50%, #c91e75 100%);
+  color: var(--blanco);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ticket-sinpe-logo {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  background-color: var(--blanco);
+  border: 1.5px solid var(--rosa-claro);
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.ticket-sinpe-titulo {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+.ticket-sinpe-subtitulo {
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.ticket-sinpe-cuerpo {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ticket-fila-dato {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--texto-oscuro);
+  gap: 8px;
+}
+
+.ticket-divisor {
+  border: none;
+  border-top: 1.5px dashed var(--rosa-claro);
+  margin: 4px 0;
+}
+
+.ticket-fila-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--rosa-pastel-caja);
+  border: 1.5px solid var(--rosa-fuerte);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 15px;
+  color: var(--rosa-titular);
+}
+
+.ticket-sinpe-pie {
+  background-color: var(--rosa-fila);
+  border-top: 1px solid var(--rosa-claro);
+  padding: 8px 12px;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--rosa-titular);
+}
+
+/* Panel de Alertas de Stock Bajo en Inicio */
+.panel-alerta-stock-inicio {
+  background-color: var(--blanco);
+  border: 2px solid var(--rosa-fuerte);
+  border-radius: 12px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.cabecera-alerta-stock {
+  background-color: var(--rosa-pastel-caja);
+  border-bottom: 1.5px solid var(--rosa-claro);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--rosa-titular);
+}
+
+.enlace-accion-alerta {
+  background-color: var(--blanco);
+  border: 1.5px solid var(--rosa-fuerte);
+  border-radius: 999px;
+  padding: 3px 11px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 12px;
+  color: var(--rosa-titular);
+  text-decoration: none;
+}
+
+.enlace-accion-alerta:hover {
+  background-color: var(--rosa-fuerte);
+  color: var(--blanco);
+}
+
+.lista-alertas-stock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.item-alerta-stock {
+  background-color: var(--rosa-fila);
+  border: 1px solid var(--rosa-claro);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+}
+
+.item-alerta-titulo {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 13.5px;
+  color: var(--rosa-titular);
+  margin-bottom: 3px;
+}
+
+.item-alerta-meta {
+  display: flex;
+  justify-content: space-between;
+  color: var(--texto-oscuro);
+}
+
+.item-alerta-proveedor {
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--texto-pie);
+  font-weight: 600;
+}
+
+/* Barra de filtros instantaneos en Productos */
+.barra-filtros-catalogo {
+  background-color: var(--blanco);
+  border: 1.5px solid var(--rosa-claro);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.grupo-campo-checkbox {
+  display: flex;
+  align-items: center;
+  height: 34px;
+}
+
+.etiqueta-checkbox-alerta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--rosa-titular);
+  cursor: pointer;
+}
+
+/* Timeline de 4 etapas en TablaPedidos */
+.celda-timeline-pedido {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.barra-etapas-importacion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.paso-timeline {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--rosa-claro);
+  background-color: var(--blanco);
+  color: var(--texto-pie);
+}
+
+.paso-timeline-activo {
+  background-color: var(--rosa-fuerte);
+  border-color: var(--rosa-titular);
+  color: var(--blanco);
+}
+
+.nota-pedido-cancelado {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--rosa-titular);
+}
+
 @media (max-width: 760px) {
   .contenedor-autenticacion {
     flex-direction: column;

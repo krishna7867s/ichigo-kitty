@@ -17,11 +17,25 @@ function CorazonAzul() {
 }
 
 const ETIQUETAS_ESTADO = {
-  pedido: 'Pedido',
-  en_transito: 'En tránsito',
-  recibido: 'Recibido',
+  pedido: '1. Pedido en Fábrica China',
+  en_transito: '2. En Tránsito / Aduana TICA',
+  recibido: '4. Recibido en Bodega San José',
   cancelado: 'Cancelado'
 };
+
+const ETAPAS_TIMELINE = [
+  { clave: 1, texto: '1. Fábrica China' },
+  { clave: 2, texto: '2. Vuelo / Buque' },
+  { clave: 3, texto: '3. Aduana TICA CR' },
+  { clave: 4, texto: '4. Bodega San José' }
+];
+
+function nivelProgresoEstado(estado) {
+  if (estado === 'pedido') return 1;
+  if (estado === 'en_transito') return 3;
+  if (estado === 'recibido') return 4;
+  return 0;
+}
 
 function formatearFecha(fechaIso) {
   if (!fechaIso) return '—';
@@ -41,13 +55,13 @@ function TablaPedidos({ pedidos, detallesPorPedido, alEditar, alEliminar }) {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Proveedor</th>
+            <th>Proveedor (China)</th>
             <th>Fecha</th>
-            <th>Estado</th>
-            <th>Rastreo</th>
-            <th>Envío</th>
+            <th>Rastreador de Importación (Shenzhen -&gt; Costa Rica)</th>
+            <th>Guía / Rastreo</th>
+            <th>Flete (USD)</th>
             <th>Total (CNY)</th>
-            <th>Artículos</th>
+            <th>Artículos del Lote</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -59,17 +73,44 @@ function TablaPedidos({ pedidos, detallesPorPedido, alEditar, alEliminar }) {
           ) : (
             pedidos.map((pedido) => {
               const detalles = detallesPorPedido[pedido.id] || [];
+              const nivel = nivelProgresoEstado(pedido.estado);
+
               return (
                 <tr key={pedido.id}>
                   <td>#{pedido.id}</td>
-                  <td>{pedido.proveedor_nombre}</td>
+                  <td>
+                    <strong>{pedido.proveedor_nombre}</strong>
+                  </td>
                   <td>{formatearFecha(pedido.fecha)}</td>
                   <td>
-                    <span className="etiqueta-estado">
-                      {ETIQUETAS_ESTADO[pedido.estado] || pedido.estado}
-                    </span>
+                    <div className="celda-timeline-pedido">
+                      <span className="etiqueta-estado">
+                        {ETIQUETAS_ESTADO[pedido.estado] || pedido.estado}
+                      </span>
+                      {pedido.estado !== 'cancelado' ? (
+                        <div className="barra-etapas-importacion" aria-label="Progreso de importación">
+                          {ETAPAS_TIMELINE.map((etapa) => {
+                            const completada = nivel >= etapa.clave;
+                            return (
+                              <span
+                                key={etapa.clave}
+                                className={
+                                  completada
+                                    ? 'paso-timeline paso-timeline-activo'
+                                    : 'paso-timeline'
+                                }
+                              >
+                                {etapa.texto}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="nota-pedido-cancelado">Orden anulada sin ingreso a stock</div>
+                      )}
+                    </div>
                   </td>
-                  <td>{pedido.rastreo || '—'}</td>
+                  <td>{pedido.rastreo || 'Pendiente de guía'}</td>
                   <td>${Number(pedido.costo_envio).toFixed(2)}</td>
                   <td>
                     <strong>¥{Number(pedido.total_cny).toFixed(2)}</strong>
@@ -117,4 +158,3 @@ function TablaPedidos({ pedidos, detallesPorPedido, alEditar, alEliminar }) {
 }
 
 export default TablaPedidos;
-

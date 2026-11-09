@@ -50,6 +50,7 @@ const marcasLicenciasRoutes = require('./routes/marcaLicenciaRoutes');
 const controlCalidadRoutes = require('./routes/controlCalidadRoutes');
 const promocionesDescuentosRoutes = require('./routes/promocionRoutes');
 const incidenciasEnvioRoutes = require('./routes/incidenciaEnvioRoutes');
+const herramientasRoutes = require('./routes/herramientasRoutes');
 
 function sembrarDatosIniciales() {
   const totalCategorias = db.prepare('SELECT COUNT(*) AS total FROM categorias').get().total;
@@ -259,6 +260,7 @@ app.use('/api/marcas_licencias', authMiddleware, marcasLicenciasRoutes);
 app.use('/api/control_calidad', authMiddleware, controlCalidadRoutes);
 app.use('/api/promociones_descuentos', authMiddleware, promocionesDescuentosRoutes);
 app.use('/api/incidencias_envio', authMiddleware, incidenciasEnvioRoutes);
+app.use('/api/herramientas', authMiddleware, herramientasRoutes);
 
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {

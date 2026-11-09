@@ -196,4 +196,16 @@ export async function eliminarEntidadGenerica(recurso, id) {
   await clienteApi.delete(`/${recurso}/${id}`);
 }
 
+export async function calcularImportacionCR(datos) {
+  const respuesta = await clienteApi.post('/herramientas/calcular-importacion', datos);
+  return respuesta.data;
+}
+
+export async function obtenerAlertasStockCR(limite = 12) {
+  const respuesta = await clienteApi.get('/herramientas/alertas-stock', {
+    params: { limite }
+  });
+  return respuesta.data;
+}
+
 export default clienteApi;

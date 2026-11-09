@@ -14,6 +14,7 @@ import {
   actualizarDetallePedido,
   eliminarDetallePedido
 } from '../services/api';
+import { exportarDatosCSV } from '../utils/exportarCSV';
 
 function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
@@ -166,13 +167,37 @@ function Pedidos() {
     }
   }
 
+  function exportarPedidosCSV() {
+    exportarDatosCSV(
+      'pedidos_importacion_china_costa_rica.csv',
+      pedidos.map((p) => ({
+        ID_Pedido: p.id,
+        Proveedor_China: p.proveedor_nombre,
+        Fecha_Orden: p.fecha,
+        Estado_Logistico: p.estado,
+        Guia_Rastreo: p.rastreo || 'Sin guia',
+        Flete_USD: p.costo_envio,
+        Total_FOB_CNY: p.total_cny
+      }))
+    );
+  }
+
   return (
     <div>
       <div className="cabecera-pagina-crud">
-        <h1 className="titulo-pagina-crud">Pedidos</h1>
-        <button type="button" className="boton-pildora-gloss" onClick={abrirCrear}>
-          Agregar pedido
-        </button>
+        <h1 className="titulo-pagina-crud">Pedidos de Importación y Rastreador China -&gt; Costa Rica</h1>
+        <div className="acciones-cabecera-multiple">
+          <button
+            type="button"
+            className="boton-secundario-blanco"
+            onClick={exportarPedidosCSV}
+          >
+            Exportar Pedidos a Excel (CSV)
+          </button>
+          <button type="button" className="boton-pildora-gloss" onClick={abrirCrear}>
+            Agregar pedido
+          </button>
+        </div>
       </div>
 
       {errorBackend && (

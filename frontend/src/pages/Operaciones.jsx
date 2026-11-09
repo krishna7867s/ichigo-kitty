@@ -6,6 +6,7 @@ import {
   actualizarEntidadGenerica,
   eliminarEntidadGenerica
 } from '../services/api';
+import { exportarDatosCSV } from '../utils/exportarCSV';
 
 const ETIQUETAS_COLUMNAS = {
   id: 'ID',
@@ -419,11 +420,22 @@ function Operaciones() {
           <p className="descripcion-modulo-activa">{tablaActual.descripcion}</p>
         </div>
 
-        {!tablaActual.soloLectura && (
-          <button type="button" className="boton-pildora-gloss" onClick={abrirCrear}>
-            Agregar en {tablaActual.recurso}
+        <div className="acciones-cabecera-multiple">
+          <button
+            type="button"
+            className="boton-secundario-blanco"
+            onClick={() =>
+              exportarDatosCSV(`reporte_${tablaActual.recurso}_cr.csv`, registros)
+            }
+          >
+            Exportar Tabla a Excel (CSV)
           </button>
-        )}
+          {!tablaActual.soloLectura && (
+            <button type="button" className="boton-pildora-gloss" onClick={abrirCrear}>
+              Agregar en {tablaActual.recurso}
+            </button>
+          )}
+        </div>
       </div>
 
       {errorBackend && (

@@ -52,6 +52,7 @@ const marcaLicenciaRoutes = require('./routes/marcaLicenciaRoutes');
 const controlCalidadRoutes = require('./routes/controlCalidadRoutes');
 const promocionRoutes = require('./routes/promocionRoutes');
 const incidenciaEnvioRoutes = require('./routes/incidenciaEnvioRoutes');
+const herramientasRoutes = require('./routes/herramientasRoutes');
 
 const app = express();
 
@@ -97,6 +98,7 @@ app.use('/api/marcas_licencias', authMiddleware, marcaLicenciaRoutes);
 app.use('/api/control_calidad', authMiddleware, controlCalidadRoutes);
 app.use('/api/promociones_descuentos', authMiddleware, promocionRoutes);
 app.use('/api/incidencias_envio', authMiddleware, incidenciaEnvioRoutes);
+app.use('/api/herramientas', authMiddleware, herramientasRoutes);
 
 // Manejo global de errores JSON en Express
 app.use((err, req, res, next) => {
@@ -115,3 +117,4 @@ if (require.main === module) {
 }
 
 module.exports = app;
+

@@ -1,13 +1,19 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Navegacion from './Navegacion';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, ROLES_SISTEMA } from '../context/AuthContext';
 
 function Encabezado() {
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
   const navegar = useNavigate();
   const ubicacion = useLocation();
-  const { usuario, autenticado, cerrarSesion } = useAuth();
+  const {
+    usuario,
+    autenticado,
+    rolActivo,
+    cambiarRolActivo,
+    cerrarSesion
+  } = useAuth();
 
   const esPaginaAuth =
     ubicacion.pathname === '/login' || ubicacion.pathname === '/registro';
@@ -33,7 +39,7 @@ function Encabezado() {
       <div className="contenedor-central">
         <div className={esPaginaAuth ? 'encabezado-superior encabezado-sin-borde' : 'encabezado-superior'}>
           <Link to="/" className="logo-kitty">
-            Ichigo Kitty
+            Ichigo Kitty CR
           </Link>
 
           {!esPaginaAuth && autenticado && (
@@ -48,16 +54,34 @@ function Encabezado() {
                   className="campo-busqueda"
                   value={terminoBusqueda}
                   onChange={(e) => setTerminoBusqueda(e.target.value)}
-                  placeholder="Nombre de producto..."
+                  placeholder="Producto, categoría..."
                 />
                 <button type="submit" className="boton-ir">
                   IR
                 </button>
               </form>
 
+              <div className="selector-rol-encabezado">
+                <label htmlFor="select-rol-activo" className="etiqueta-busqueda">
+                  Rol:
+                </label>
+                <select
+                  id="select-rol-activo"
+                  className="select-rol-sanrio"
+                  value={rolActivo}
+                  onChange={(e) => cambiarRolActivo(e.target.value)}
+                >
+                  {Object.keys(ROLES_SISTEMA).map((clave) => (
+                    <option key={clave} value={clave}>
+                      {ROLES_SISTEMA[clave].etiqueta}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="bloque-usuario-encabezado">
                 <span className="nombre-usuario-encabezado">
-                  {usuario?.nombre || 'Usuario'}
+                  {usuario?.nombre || 'Sakura Admin'}
                 </span>
                 <span className="separador-navegacion" aria-hidden="true" />
                 <a

@@ -5,7 +5,8 @@ const ENLACES = [
   { ruta: '/productos', texto: 'Productos' },
   { ruta: '/categorias', texto: 'Categorías' },
   { ruta: '/proveedores', texto: 'Proveedores' },
-  { ruta: '/pedidos', texto: 'Pedidos' },
+  { ruta: '/pedidos', texto: 'Pedidos & Rastreo' },
+  { ruta: '/herramientas', texto: 'Calculadora Aduana & SINPE CR' },
   { ruta: '/operaciones', texto: 'Módulos (20 Tablas)' }
 ];
 
@@ -35,4 +36,3 @@ function Navegacion() {
 }
 
 export default Navegacion;
-
